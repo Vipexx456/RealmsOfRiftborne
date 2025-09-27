@@ -1,4 +1,5 @@
 public class Character {
+    
     private int hp;
     private int attack;
     private int mana;

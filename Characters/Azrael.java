@@ -1,4 +1,5 @@
 public class Azrael {
+    
     private int hp;
     private int attack;
     private int mana;
@@ -8,6 +9,7 @@ public class Azrael {
     
 
     public Azrael() {
+
         this.hp = 30000;
         this.attack = 5000;
         this.mana = 4500;
@@ -15,10 +17,10 @@ public class Azrael {
         this.speed = 40;
         this.name = "Azrael - Annihilation of Realms";
 
-
-
     }
+
     public int eclipseBlades() {
+
         if(this.mana >= 300){
             this.mana -= 300;
             int damage = this.attack * 2;
@@ -28,8 +30,11 @@ public class Azrael {
             System.out.println(this.name + " does not have enough mana! ");
             return 0;
         }
+
     }
+
     public int graviticCollapse() {
+
         if(this.mana >= 750){
             this.mana -= 750;
             int damage = this.attack * 4;
@@ -39,10 +44,11 @@ public class Azrael {
             System.out.println(this.name + " does not have enough mana! ");
             return 0;
         }
+
     }
 
-
     public int shattershock() {
+
         if(this.mana >= 1500){
             this.mana -= 1500;
             int damage = this.attack * 6;
@@ -54,7 +60,9 @@ public class Azrael {
         }
 
     }
+
     public int oblivionsEmbrace() {
+
         if(this.mana >= 2000){
             this.mana -= 2000;
             int damage = this.attack * 8;
@@ -67,6 +75,4 @@ public class Azrael {
 
     }
 
-
-    
 }

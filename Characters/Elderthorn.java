@@ -1,4 +1,5 @@
 public class Elderthorn {
+
     private int hp;
     private int attack;
     private int mana;
@@ -8,6 +9,7 @@ public class Elderthorn {
     
 
     public Elderthorn() {
+
         this.hp = 10000;
         this.attack = 450;
         this.mana = 1000;
@@ -15,11 +17,10 @@ public class Elderthorn {
         this.speed = 20;
         this.name = "Elderthorn";
 
-
-
     }
 
     public int thornSlash() {
+
         if(this.mana >= 300){
             this.mana -= 300;
             int damage = this.attack * 2;
@@ -29,9 +30,11 @@ public class Elderthorn {
             System.out.println(this.name + " does not have enough mana! ");
             return 0;
         }
+
     }
 
     public int eternalWildstorm() {
+
         if(this.mana >= 600){
             this.mana -= 600;
             int damage = this.attack * 4;
@@ -43,7 +46,5 @@ public class Elderthorn {
         }
 
     }
-
-
-    
+ 
 }

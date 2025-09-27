@@ -1,4 +1,5 @@
 public class Gunner extends Character {
+
     private int hp;
     private int attack;
     private int mana;
@@ -10,7 +11,9 @@ public class Gunner extends Character {
     private String charClass;
     private String weapon;
 
+    
     public Gunner() {
+
         this.hp = 4000;
         this.attack = 450;
         this.mana = 600;
@@ -21,6 +24,7 @@ public class Gunner extends Character {
         this.name = "Selene Arclight";
         this.charClass = "Gunner";
         this.weapon = "Rusty Dual Pistol";
+
     }
     
 }

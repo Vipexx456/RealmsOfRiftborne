@@ -10,6 +10,7 @@ import java.util.Scanner;
 // Select Character Prompt
 
 class StartMenu extends Narration { 
+    
     static Scanner scan = new Scanner(System.in);
     static boolean hasVisitedPrologue = false;
 

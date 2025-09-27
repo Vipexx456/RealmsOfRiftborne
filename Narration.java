@@ -6,11 +6,11 @@ public class Narration{
     // Narration for Prologue
     public static void prologueNarration() {
         String[] prologue = {
-            "Your days as a student have been a blur of half-hearted effort and quiet frustration. \nLessons slip past you, faces blur together, and the weight of expectations presses down heavier with each passing week. \nTonight feels no different—you collapse into bed, hoping that sleep might offer an escape, if only for a few hours.",
+            "Your days as a student have been a blur of half-hearted effort and quiet frustration. \nLessons slip past you, faces blur together, and the weight of expectations presses down heavier with each passing week. \nTonight feels no different-you collapse into bed, hoping that sleep might offer an escape, if only for a few hours.",
             
             "But this sleep is unlike any other.",
             
-            "You wake with a start, not in your room, but in a place you\'ve never seen before. \nThe air is sharp and crisp, carrying the faint scent of pine and old stone. A pale moon hangs above an endless forest, \nits silver light spilling over a towering structure in the distance - an academy, its spires reaching for the sky.",
+            "You wake with a start, not in your room, but in a place you\'ve never seen before. \nThe air is sharp and crisp, carrying the faint scent of pine and old stone. A pale moon hangs above an endless forest, \nits silver light spilling over a towering structure in the distance - a fortress, its spires reaching for the sky.",
             
             "As you take a cautious step forward, a presence brushes against you. Weightless, yet undeniable. \nA wandering spirit materializes from the air itself, its form shifting like smoke caught in a breeze. \nIts voice is calm, distant, but warm enough to ease the unease clawing at your chest.",
             

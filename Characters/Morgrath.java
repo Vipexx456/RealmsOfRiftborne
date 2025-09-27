@@ -1,4 +1,5 @@
 public class Morgrath {
+
     private int hp;
     private int attack;
     private int mana;
@@ -8,6 +9,7 @@ public class Morgrath {
     
 
     public Morgrath  () {
+
         this.hp = 20000;
         this.attack = 1000;
         this.mana = 3000;
@@ -15,10 +17,10 @@ public class Morgrath {
         this.speed = 40;
         this.name = "Morgrath";
 
-
-
     }
+
     public int swampMaw() {
+
         if(this.mana >= 500){
             this.mana -= 500;
             int damage = this.attack * 2;
@@ -28,8 +30,11 @@ public class Morgrath {
             System.out.println(this.name + " does not have enough mana! ");
             return 0;
         }
+
     }
+
     public int pestilentOoze() {
+
         if(this.mana >= 750){
             this.mana -= 750;
             int damage = this.attack * 4;
@@ -39,10 +44,11 @@ public class Morgrath {
             System.out.println(this.name + " does not have enough mana! ");
             return 0;
         }
+
     }
 
-
     public int crownOfTheMire() {
+        
         if(this.mana >= 1500){
             this.mana -= 1500;
             int damage = this.attack * 6;

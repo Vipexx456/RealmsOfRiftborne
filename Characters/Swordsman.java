@@ -1,4 +1,5 @@
 public class Swordsman extends Character{
+
     private int hp;
     private int attack;
     private int mana;
@@ -10,7 +11,9 @@ public class Swordsman extends Character{
     private String charClass;
     private String weapon;
 
+
     public Swordsman() {
+
         this.hp = 4000;
         this.attack = 500;
         this.mana = 700;
@@ -21,6 +24,7 @@ public class Swordsman extends Character{
         this.name = "Kael Solmere";
         this.charClass = "Swordsman";
         this.weapon = "Wooden Sword";
+        
     }
     
 }

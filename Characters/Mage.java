@@ -1,4 +1,5 @@
 public class Mage extends Character {
+
     private int hp;
     private int attack;
     private int mana;
@@ -10,7 +11,9 @@ public class Mage extends Character {
     private String charClass;
     private String weapon;
 
+
     public Mage() {
+
         this.hp = 4000;
         this.attack = 550;
         this.mana = 1000;
@@ -21,6 +24,7 @@ public class Mage extends Character {
         this.name = "Aria Caelith";
         this.charClass = "Mage";
         this.weapon = "Wooden Staff";
+        
     }
 
 }
