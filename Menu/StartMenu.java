@@ -1,6 +1,8 @@
 package Menu;
 
-import Narration.Narration;
+import Narration.*;
+//import Hero.*;
+
 import java.util.Scanner;
 
 public class StartMenu extends Narration { 
@@ -13,7 +15,7 @@ public class StartMenu extends Narration {
 
         //boolean play = true;
 
-        while(play){
+        while(true){
             System.out.println("+-----------------------------------------+");
             System.out.println("|             Mystvale Academy            |");
             System.out.println("+-----------------------------------------+");
@@ -45,8 +47,6 @@ public class StartMenu extends Narration {
                     System.out.println("│          Choose a character to play          │");
                     System.out.println("└──────────────────────────────────────────────┘");
                     
-                    //charHandler.chooseCharacterMenu();
-                    //menuHandler.defaultMainMenu();
 
                     return true;
 

@@ -1,22 +1,27 @@
 package Menu;
 
-import TrainingGround.Training;
+import TrainingGround.*;
+import Hero.*;
 
 import java.util.Scanner;
 
 public class TrainingMenu {
 
     static Scanner scanner = new Scanner(System.in);
-    boolean continueSparring = true;
     
-    public void trainingMenu(){
-        Training trainingHandler = new Training();
-        boolean training = true;
+    private Training trainingHandler;
+
+    public TrainingMenu(Training trainingHandler) {
+        this.trainingHandler = trainingHandler;
+    }
+    
+    public void trainingMenu(Hero hero){
+        boolean training = true; 
 
         while(training){
             System.out.println();
             System.out.println("+------------------------------------------------+");
-            System.out.println("|            Choose Your Training Discipline     |");
+            System.out.println("|         Choose Your Training Discipline        |");
             System.out.println("+------------------------------------------------+");
             System.out.println("| 1. Endurance                                    |");
             System.out.println("|    Push your limits with stamina training and   |");
@@ -30,55 +35,96 @@ public class TrainingMenu {
             System.out.println("| 4. Mana Refinement                              |");
             System.out.println("|    Enhance magical control and efficiency by    |");
             System.out.println("|    focusing on internal mana flow.              |");
-            System.out.println("| 5. Exit Training                                |");
             System.out.println("+------------------------------------------------+");
             System.out.print(">>> ");
 
            String choice = scanner.nextLine();
 
-           while(continueSparring){
-                switch (choice) {
-                    case "1":
-                        System.out.println("Endurance Training"); // edit format
+            switch (choice) {
+                case "1":
+                    System.out.println();
+                    System.out.println("┌───────────────────────────────────┐");
+                    System.out.println("│         Endurance Training        │");
+                    System.out.println("└───────────────────────────────────┘");
 
-                        trainingHandler.generalTrainingPrompt();
-
-                        continueSparring = false;
-                        break;
-
-                    case "2":
-                        System.out.println("Strength Training"); // edit format
-
-                        trainingHandler.generalTrainingPrompt();
-
-                        continueSparring = false;
-                        break;
-
-                    case "3":
-                        System.out.println("Durability"); // edit format
-
-                        trainingHandler.generalTrainingPrompt();
-
-                        continueSparring = false;
-                        break;
-
-                    case "4":
-                        System.out.println("Mana Refinement"); // edit format
-
-                        trainingHandler.generalTrainingPrompt();
-
-                        continueSparring = false;
-                        break;
-
-                    default:
+                    if (hero.hasFinishedEndurance()) {
                         System.out.println();
-                        System.out.println("┌───────────────────────────────┐");
-                        System.out.println("│   Invalid input. Try again.   │");
-                        System.out.println("└───────────────────────────────┘");
-                }
-            }
-            
-            training = false;
+                        System.out.println("┌─────────────────────────────────────────────┐");
+                        System.out.println("│     You have already mastered Endurance     │");
+                        System.out.println("│     Please choose another training type     │");
+                        System.out.println("└─────────────────────────────────────────────┘");
+                    } else {
+                        trainingHandler.generalTrainingPrompt(hero, "endurance");
+                        training = false;
+                    }
+
+                    break;
+
+                case "2":
+                    System.out.println();
+                    System.out.println("┌───────────────────────────────────┐");
+                    System.out.println("│         Strength Training         │");
+                    System.out.println("└───────────────────────────────────┘");
+
+                    if (hero.hasFinishedStrength()) {
+                        System.out.println();
+                        System.out.println("┌─────────────────────────────────────────────┐");
+                        System.out.println("│     You have already mastered Strength!     │");
+                        System.out.println("│     Please choose another training type     │");
+                        System.out.println("└─────────────────────────────────────────────┘");
+                    } else {
+                        trainingHandler.generalTrainingPrompt(hero, "strength");
+                        training = false;
+                    }
+
+                    break;
+
+                case "3":
+                    System.out.println();
+                    System.out.println("┌───────────────────────────────────┐");
+                    System.out.println("│         Durability Training       │");
+                    System.out.println("└───────────────────────────────────┘");
+
+                     if (hero.hasFinishedDurability()) {
+                        System.out.println();
+                        System.out.println("┌─────────────────────────────────────────────┐");
+                        System.out.println("│     You have already mastered Durability    │");
+                        System.out.println("│     Please choose another training type     │");
+                        System.out.println("└─────────────────────────────────────────────┘");
+                    } else {
+                        trainingHandler.generalTrainingPrompt(hero, "durability");
+                        training = false;
+                    }
+
+                    break;
+
+                case "4":
+                    System.out.println();
+                    System.out.println("┌───────────────────────────────────┐");
+                    System.out.println("│     Mana Refinement Training      │");
+                    System.out.println("└───────────────────────────────────┘");
+                    
+                    if (hero.hasFinishedManaRefinement()) {
+                        System.out.println();
+                        System.out.println("┌─────────────────────────────────────────────┐");
+                        System.out.println("│  You have already mastered Mana Refinement! │");
+                        System.out.println("│     Please choose another training type     │");
+                        System.out.println("└─────────────────────────────────────────────┘");
+                    } else {
+                        trainingHandler.generalTrainingPrompt(hero, "mana refinement");
+                        training = false;
+                    }
+
+                    break;
+
+                default:
+                    System.out.println();
+                    System.out.println("┌───────────────────────────────┐");
+                    System.out.println("│   Invalid input! Try again.   │");
+                    System.out.println("└───────────────────────────────┘");
+                    continue;
+            } 
         }
     }
+
 }

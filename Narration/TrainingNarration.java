@@ -1,0 +1,54 @@
+package Narration;
+
+import java.util.Scanner;
+
+public class TrainingNarration {
+
+    Scanner scanner = new Scanner(System.in);
+
+    public void exploreNarration(){
+
+        String[] exploreGym = {
+            "As you enter the Gym's left wing, the Training Ground bursts with activity — students duel with wands, spar hand-to-hand, and clash swords at the center.",
+            "Thunderous shots echo from a warded enclosure where firearms meet magic.",
+            "A tall coach steps forward, eyes sharp. \"You\'re not part of the current training batch, are you?\"",
+            "They study your stance. \"Untaught, but solid. Are you here to watch or to learn?\"",
+            "Folding their arms, they add, \"If you want to grow stronger, I can offer a proper session — only if you’re ready to earn it.\""
+        };
+
+        playGymNarration(exploreGym);
+
+    }
+
+    public void acceptedTraining(){
+        String[] accept = {
+            "You meet the coach\'s gaze and nod.",
+            "\"Good. Let\'s see what you can do,\" they say, gesturing to an open section of the arena.",
+            "Noise fades as your focus narrows. \"Training here isn\'t about power - it\'s about control,\" the coach warns.",
+            "\"Show me your stance. Let\'s start with the basics.\"",
+            "You steady yourself. The coach smiles faintly. \"That\'s more like it. Welcome to the Training Ground.\""
+        };
+
+        playGymNarration(accept);
+
+    }
+
+    public void playGymNarration(String[] arr){
+
+        System.out.println();
+        System.out.println("┌──────────────────────────────┐");
+        System.out.println("│  Press Enter to continue...  │");
+        System.out.println("└──────────────────────────────┘");
+
+        for (String line : arr) {
+            scanner.nextLine();
+                System.out.println(line);
+        }
+        
+        System.out.println();
+        return; 
+        
+    }
+
+}
+

@@ -1,21 +1,21 @@
 import Menu.*;
+import Hero.*;
 
 public class Main {
     public static void main(String[] args) {
+        Menu mainMenu = new Menu();
         StartMenu startMenu = new StartMenu();
         CharacterMenu characterMenu = new CharacterMenu();
-        Menu mainMenu = new Menu();
-
+        
         boolean shouldStartGame = startMenu.displayStartMenu();
 
         if (!shouldStartGame) {
             return;
         }
 
-        characterMenu.chooseCharacterMenu();
+        Hero hero =  characterMenu.chooseCharacterMenu();
 
-        while (true) {
-            mainMenu.defaultMainMenu();
-        }
+        mainMenu.mainMenu(hero);
+
     }
 }

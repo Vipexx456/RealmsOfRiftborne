@@ -1,36 +1,29 @@
 package Menu;
 
-import Narration.Narration;
+import Hero.*;
+import Narration.*;
 import Area.ForestOfReverie;
+
 import java.util.Scanner;
 
 public class Menu extends Narration {
     static Scanner scanner = new Scanner(System.in);
 
-    //Change these variables to private once encasulation is implemented (i think)
-    private boolean hasVisitedShop = false;
-    private boolean hasOpenedInventory = false;
-    private boolean hasVisitedAcademy = false;
-    private boolean hasVisitedArea1 = false;
-    private boolean hasVisitedArea2 = false;
-    private boolean hasVisitedArea3 = false;
-
-    public void defaultMainMenu(){
-        boolean runMainMenu = true;
+    public void mainMenu(Hero hero){
         AcademyMenu handler = new AcademyMenu();
         ForestOfReverie forest = new ForestOfReverie();
         
-        while(runMainMenu){
+        while(true){
             System.out.println("+------------------------------------------+");
             System.out.println("|    --- MYSTVALE ACADEMY MAIN MENU ---    |");
             System.out.println("+------------------------------------------+");
-            System.out.println("| 1. Go to Academy                         |");
-            System.out.println("| 2. Shop                                  |");
-            System.out.println("| 3. Inventory                             |");
-            System.out.println("| 4. The Forest of Reverie                 |");
-            System.out.println("| 5. The Reverie Edge                      |");
-            System.out.println("| 6. The Forsaken Lands                    |");
-            System.out.println("| 7. Exit Game                             |");
+            System.out.println("| [1] Go to Academy                         |");
+            System.out.println("| [2] Shop                                  |");
+            System.out.println("| [3] Inventory                             |");
+            System.out.println("| [4] The Forest of Reverie                 |");
+            System.out.println("| [5] The Reverie Edge                      |");
+            System.out.println("| [6] The Forsaken Lands                    |");
+            System.out.println("| [7] Exit Game                             |");
             System.out.println("+------------------------------------------+");
             System.out.println("┌──────────────────────────────┐");
             System.out.println("│   Where do you want to go?   │");
@@ -44,9 +37,9 @@ public class Menu extends Narration {
             
             switch (mainMenuChoice){
                 case "1":
-                    if (!hasVisitedAcademy) {
+                    if (!hero.hasVisitedAcademy()) {
                         academyNarration();
-                        hasVisitedAcademy = true;
+                        hero.setHasVisitedAcademy(true);
                     } 
 
                     System.out.println();
@@ -54,13 +47,13 @@ public class Menu extends Narration {
                     System.out.println("│        You are now inside the Academy        │");
                     System.out.println("└──────────────────────────────────────────────┘");
 
-                    handler.academyMapMenu();
+                    handler.academyMapMenu(hero);
                     break;
 
                 case "2":
-                    if (!hasVisitedShop) {
+                    if (!hero.hasVisitedShop()) {
                         shopNarration();
-                        hasVisitedShop = true;
+                        hero.setHasVisitedShop(true);
                     }
                         
                     System.out.println();
@@ -72,11 +65,11 @@ public class Menu extends Narration {
                     break;
 
                 case "3":
-                    boolean isInventoryEmpty = false;
+                    boolean isInventoryEmpty = false; // default case since wala pay inventory
 
-                    if (!hasOpenedInventory) {
+                    if (!hero.hasOpenedInventory()) {
                         inventoryNarration();
-                        hasOpenedInventory = true;
+                        hero.setHasOpenedInventory(true);
                     }
                         System.out.println();
                         System.out.println("┌────────────────────────────────────┐");
@@ -96,49 +89,90 @@ public class Menu extends Narration {
 
                 case "4":
                     
-                    // add restriction
+                    if (hero.canEnterArea1()) {
+                        System.out.println("┌───────────────────────────────────────────────┐");
+                        System.out.println("│    You may now enter The Forest of Reverie    │");
+                        System.out.println("└───────────────────────────────────────────────┘");
 
-                    if (!hasVisitedArea1) {
-                        area1Narration();
-                        hasVisitedArea1 = true;
-                    } 
-                    
-                    System.out.println();
-                    System.out.println("┌────────────────────────────────────┐");
-                    System.out.println("│      Beware of forest entities     │");
-                    System.out.println("└────────────────────────────────────┘");
 
-                    forest.enter();
+                        if (!hero.hasVisitedArea1()) {
+                            area1Narration();
+                            hero.setHasVisitedArea1(true);
+                        }
+
+                        System.out.println();
+                        System.out.println("┌────────────────────────────────────┐");
+                        System.out.println("│      Beware of forest entities     │");
+                        System.out.println("└────────────────────────────────────┘");
+
+                        forest.enter(hero);
+
+                    } else {
+                        System.out.println();
+                        System.out.println("┌──────────────────────────────────────────────────────────────┐");
+                        System.out.println("│     You are not eligible to enter The Forest of Reverie      │");
+                        System.out.println("│      Visit the Principal's Office to unlock this area        │");
+                        System.out.println("└──────────────────────────────────────────────────────────────┘");
+                    }
+
                     break;
                     
                 case "5":
                     
-                    // add restriction
+                    if (hero.canEnterArea2()) {
+                        System.out.println("┌──────────────────────────────────────────────┐");
+                        System.out.println("│      You may now enter The Reverie Edge      │");
+                        System.out.println("└──────────────────────────────────────────────┘");
 
-                    if (!hasVisitedArea2) {
-                        area2Narration();
-                        hasVisitedArea2 = true;
-                    } 
-                    
-                    System.out.println();
-                    System.out.println("┌────────────────────────────────┐");
-                    System.out.println("│    Beware of swamp entities    │");
-                    System.out.println("└────────────────────────────────┘");
+                        
+                        if (!hero.hasVisitedArea2()) {
+                            area2Narration();
+                            hero.setHasVisitedArea2(true);
+                        }
+
+                        System.out.println();
+                        System.out.println("┌────────────────────────────────┐");
+                        System.out.println("│    Beware of swamp entities    │");
+                        System.out.println("└────────────────────────────────┘");
+
+                        // Code to enter Area 2 goes here
+                    } else {
+                        System.out.println();
+                        System.out.println("┌──────────────────────────────────────────────────────────────┐");
+                        System.out.println("│        You are not eligible to enter The Reverie Edge        │");
+                        System.out.println("│       Visit the Principal's Office to unlock this area       │");
+                        System.out.println("└──────────────────────────────────────────────────────────────┘");
+                    }
+
                     break;
                     
                 case "6":
                     
-                    // add restriction
-                    
-                    if (!hasVisitedArea3) {
-                        area3Narration();
-                        hasVisitedArea3 = true;
-                    } 
+                   if (hero.canEnterArea3()) {
+                        System.out.println("┌──────────────────────────────────────────────┐");
+                        System.out.println("│     You may now enter The Forsaken Lands     │");
+                        System.out.println("└──────────────────────────────────────────────┘");
+
                         
-                    System.out.println();
-                    System.out.println("┌──────────────────────────────────────────────────┐");
-                    System.out.println("│    Warning! You may or may not come out alive    │");
-                    System.out.println("└──────────────────────────────────────────────────┘");
+                        if (!hero.hasVisitedArea3()) {
+                            area3Narration();
+                            hero.setHasVisitedArea3(true);
+                        }
+
+                        System.out.println();
+                        System.out.println("┌──────────────────────────────────────────────────┐");
+                        System.out.println("│    Warning! You may or may not come out alive    │");
+                        System.out.println("└──────────────────────────────────────────────────┘");
+
+                        // Code to enter Area 3 goes here
+                    } else {
+                        System.out.println();
+                        System.out.println("┌──────────────────────────────────────────────────────────────┐");
+                        System.out.println("│       You are not eligible to enter The Forsaken Lands       │");
+                        System.out.println("│       Visit the Principal's Office to unlock this area       │");
+                        System.out.println("└──────────────────────────────────────────────────────────────┘");
+                    }
+
                     break;
 
                 case "7":
@@ -181,7 +215,7 @@ public class Menu extends Narration {
                     System.out.println("└─────────────────────────────┘");
             }
         }
-        
+
     }
     
 }

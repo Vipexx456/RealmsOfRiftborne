@@ -10,7 +10,7 @@ public class Swordsman extends Hero {
     private int manaCapacity = getMana();
 
     public Swordsman() {
-        super(4000, 500, 700, 350, 100, 20, 0, "Kael Solmere", "Swordsman", "Wooden Sword", "Blade Dance", "Blinding Silhouette", "Shattered Sun");
+        super(4000, 500, 700, 350, 100, 0, 0, "Kael Solmere", "Swordsman", "Wooden Sword", "Blade Dance", "Blinding Silhouette", "Shattered Sun");
     }
     
     @Override

@@ -2,8 +2,6 @@ package Narration;
 
 import java.util.Scanner;
 
-// louraine: remove static 
-
 public class Narration{
     static Scanner scanner = new Scanner(System.in);
 
@@ -346,46 +344,45 @@ public class Narration{
 
     // Array Iteration in order to avoid for loop usage repitition
     public static void playSection(String[] section) {
+        while (true) {
+            System.out.println();
+            System.out.println("┌──────────────────────────────────────────────┐");
+            System.out.println("│     Do you want to skip narration? (y/n):    │");
+            System.out.println("└──────────────────────────────────────────────┘");
+            System.out.print(">>> ");
 
-        System.out.println();
-        System.out.println("┌──────────────────────────────────────────────┐");
-        System.out.println("│     Do you want to skip narration? (y/n):    │");
-        System.out.println("└──────────────────────────────────────────────┘");
-        System.out.print(">>> ");
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) input = " ";
+            char skipChoice = input.charAt(0);
 
-        //char skipChoice = scanner.next().charAt(0);
-        String input = scanner.nextLine().trim();
-        if (input.isEmpty()) input = " ";
-        char skipChoice = input.charAt(0);
+            switch (skipChoice) {
+                case 'y':
+                    System.out.println("┌────────────────────────────┐");
+                    System.out.println("│      Narration skipped.    │");
+                    System.out.println("└────────────────────────────┘");
+                    return;
 
-        switch (skipChoice) {
-            case 'y':
-                System.out.println("┌────────────────────────────┐");
-                System.out.println("│      Narration skipped.    │");
-                System.out.println("└────────────────────────────┘");
-                return;
+                case 'n':
+                    System.out.println();
+                    System.out.println("┌───────────────────────────────────────────┐");
+                    System.out.println("│        Press Enter to continue...         │");
+                    System.out.println("└───────────────────────────────────────────┘");
 
-            case 'n':
-                System.out.println();
-                System.out.println("┌──────────────────────────────────────────────┐");
-                System.out.println("│        Press ENTER to continue...            │");
-                System.out.println("└──────────────────────────────────────────────┘");
-
-                for (int i = 0; i < section.length; i++) {
-                    scanner.nextLine();
-                    System.out.println(section[i]);
-                }
-                System.out.println(); 
-                break;
-
-            default:
-                System.out.println();
-                System.out.println("┌──────────────────────────────────────────────┐");
-                System.out.println("│   Invalid choice! Please enter 'y' or 'n'    │");
-                System.out.println("└──────────────────────────────────────────────┘");
-                break;
+                    for (String line : section) {
+                        scanner.nextLine();
+                        System.out.println(line);
+                    }
+                    System.out.println(); 
+                    return; // exit after narration
+                
+                default:
+                    System.out.println();
+                    System.out.println("┌──────────────────────────────────────────────┐");
+                    System.out.println("│   Invalid choice! Please enter 'y' or 'n'    │");
+                    System.out.println("└──────────────────────────────────────────────┘");
+                    break;
+            }
         }
-}
-
+    }
 }
 

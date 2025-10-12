@@ -2,12 +2,13 @@ package Area;
 import BattleMechanics.BattleMechanic;
 import java.util.Random;
 import java.util.Scanner;
+import Hero.*;
 
 public class ForestOfReverie {
     static Random rand = new Random();
     static Scanner scan = new Scanner(System.in);
 
-    public void enter() {
+    public void enter(Hero hero) {
         System.out.println();
         System.out.println("┌────────────────────────────────────────────┐");
         System.out.println("│   You have entered the Forest of Reverie   │");

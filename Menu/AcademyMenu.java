@@ -1,18 +1,24 @@
 package Menu;
 
-import TrainingGround.Training;
+import Hero.*;
+import Library.LibraryAcademy;
+import TrainingGround.*;
+import Office.*;
 
 public class AcademyMenu extends Menu{
+ 
+    //private boolean hasVisitedGym = false; 
+    //private boolean hasVisitedOffice = false; 
+    //private boolean hasVisitedLibrary = false;
 
-    private boolean hasVisitedLibrary = false; // not used. was used in academy
-    private boolean hasVisitedGym = false; // not used. was used in academy
-    private boolean hasVisitedOffice = false; // not used. was used in academy
-
-    public void academyMapMenu() {
+    public void academyMapMenu(Hero hero) {
         boolean academyMapMenu = true;
         Training trainingGroundHandler = new Training();
+        LibraryAcademy libraryHandler = new LibraryAcademy();
+        PrincipalOffice officeHandler = new PrincipalOffice();
 
         while (academyMapMenu) {
+            System.out.println();
             System.out.println("+-------------------------------------+");
             System.out.println("|  --- MYSTVALE ACADEMY MAP MENU ---  |");
             System.out.println("+-------------------------------------+");
@@ -28,9 +34,9 @@ public class AcademyMenu extends Menu{
             switch (academyMapMenuChoice) {
                 case "1":
 
-                    if(!hasVisitedLibrary){
+                    if(!hero.hasVisitedLibrary()){
                         libraryNarration();
-                        hasVisitedLibrary = true;
+                        hero.setVisitedLibrary(true);
                     }
 
                     System.out.println();
@@ -40,29 +46,12 @@ public class AcademyMenu extends Menu{
                     System.out.println("┌──────────────────────────────────────────────┐");
                     System.out.println("│     Shh! Be mindful, others are studying     │");
                     System.out.println("└──────────────────────────────────────────────┘");
-                    System.out.println();
+
+                    libraryHandler.libraryAcademy(hero);
+                    
                     break;
-                 
-                /*case "2":
-                    if (!hasVisitedCanteen) {
-                        canteenNarration();
-                        hasVisitedCanteen = true;
-                    } 
-
-                    System.out.println();
-                    System.out.println("┌──────────────────────────────────────────────┐");
-                    System.out.println("│        You are now inside the Canteen        │");
-                    System.out.println("└──────────────────────────────────────────────┘");
-                    System.out.println("┌────────────────────────────┐");
-                    System.out.println("│    Buy at your own risk    │");
-                    System.out.println("└────────────────────────────┘");
-                    System.out.println();
-
-                    break;
-                    */
-
+                
                 case "2":
-
                     System.out.println();
                     System.out.println("┌──────────────────────────────────────────────┐");
                     System.out.println("│    You are now inside the Training Ground    │");
@@ -70,58 +59,39 @@ public class AcademyMenu extends Menu{
                     System.out.println("┌────────────────────────────────────────────┐");
                     System.out.println("│             Be ready to train              │");
                     System.out.println("└────────────────────────────────────────────┘");
-                    System.out.println();
 
-                    if (!hasVisitedGym) {
+                    if (!hero.hasVisitedGym()) {
                         gymNarration();
+                        hero.setVisitedGym(true);
 
-                        System.out.println();
-                        System.out.println("┌─────────────────────────────────────────────┐");
-                        System.out.println("│ Do you want to explore the training ground? │");
-                        System.out.println("│                   (y/n)                     │");
-                        System.out.println("└─────────────────────────────────────────────┘");
-                        System.out.print(">>> ");
-
-                        String exploreInput = scanner.nextLine();
-
-                        if (exploreInput.equals("y")) {
-                            trainingGroundHandler.trainingGround();
-                        } else {
-                            break;
-                        }
-
-                        hasVisitedGym = true;
-                    } 
-
-                    if(hasVisitedGym){
-                        System.out.println();
-                        System.out.println("┌───────────────────────────────────────────────┐");
-                        System.out.println("│      Do you want to stay for training and     │");
-                        System.out.println("│                side quests? (y/n)             │");
-                        System.out.println("└───────────────────────────────────────────────┘");
-                        System.out.print(">>> ");
-
-                         String wouldStay = scanner.nextLine();
-
-                        if (wouldStay.equals("y")) {
-                            trainingGroundHandler.trainingAndQuests();
-                        } else {
-                            System.out.println();
-                            System.out.println("┌───────────────────────────────┐");
-                            System.out.println("│    Exiting from the Gym...    │");
-                            System.out.println("└───────────────────────────────┘");
-                        }
                     }
                     
+                    System.out.println();
+                    System.out.println("┌─────────────────────────────────────────────┐");
+                    System.out.println("│ Do you want to explore the training ground? │");
+                    System.out.println("│                   (y/n)                     │");
+                    System.out.println("└─────────────────────────────────────────────┘");
+                    System.out.print(">>> ");
+                    String exploreInput = scanner.nextLine();
+
+                    if (exploreInput.equalsIgnoreCase("y")) {
+                        trainingGroundHandler.trainingGround(hero);
+                    } else {
+                        System.out.println("┌──────────────────────────────────────────────┐");
+                        System.out.println("│     Exiting from the Training Ground...      │");
+                        System.out.println("│            Exiting from the Gym              │");
+                        System.out.println("└──────────────────────────────────────────────┘");
+                        return;
+                    }
+                    
+
                     break;
 
                 case "3":
                     
-                    // add restrictions
-                    
-                    if (!hasVisitedOffice) {
+                    if (!hero.hasVisitedOffice()) {
                         principalOfficeNarration();
-                        hasVisitedOffice = true;
+                        hero.setVisitedOffice(true);
                     } 
 
                     System.out.println();
@@ -132,6 +102,9 @@ public class AcademyMenu extends Menu{
                     System.out.println("│       May the odds be in your favor        │");
                     System.out.println("└────────────────────────────────────────────┘");
                     System.out.println();
+
+                    officeHandler.principalOffice(hero);
+                    
                     break;
 
                 case "4":
@@ -141,10 +114,7 @@ public class AcademyMenu extends Menu{
                     System.out.println("└───────────────────────────────────────────┘");
 
                     academyMapMenu = false;
-                    
-                    // Polish this part
-                    //defaultMainMenu();
-                    //academyMapMenu();
+ 
                     break;
                 
 
