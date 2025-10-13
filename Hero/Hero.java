@@ -14,12 +14,22 @@ public class Hero {
     private String skill1;
     private String skill2;
     private String ultimate;
+    private int manaCostSkill1;
+    private int manaCostSkill2;
+    private int manaCostUltimate;
+    private int cooldown1 = 0;
+    private int cooldown2 = 0;
+    private int cooldownU = 0; 
+    private int skillCd1;
+    private int skillCd2;
+    private int skillCdU;
+    private int maxMana;
 
     public Hero(){ 
 
     }
 
-    public Hero(int hp, int attack, int mana, int defense, int speed, int level, int experience, String name, String charClass, String weapon, String skill1, String skill2, String ultimate) {
+    public Hero(int hp, int attack, int mana, int defense, int speed, int level, int experience, String name, String charClass, String weapon, String skill1, String skill2, String ultimate, int manaCostSkill1, int manaCostSkill2, int manaCostUltimate, int skillCd1, int skillCd2, int skillCdU) {
         this.hp = hp;
         this.attack = attack;
         this.mana = mana;
@@ -33,33 +43,60 @@ public class Hero {
         this.skill1 = skill1;
         this.skill2 = skill2;
         this.ultimate = ultimate;
+        this.manaCostSkill1 = manaCostSkill1;
+        this.manaCostSkill2 = manaCostSkill2;
+        this.manaCostUltimate = manaCostUltimate;
+        this.maxMana = mana;
+        this.skillCd1 = skillCd1;
+        this.skillCd2 = skillCd2;
+        this.skillCdU = skillCdU;
     }
 
     public int basicAttack() {
-        int damage = multiplierB(attack, level);
-        System.out.println(name + " used Basic Attack!");
-        System.out.println("Basic Attack deals " + damage + " damage!");
+        int damage = multiplierB(getAttack(), getLevel());
+        
+        double manaRecovery = maxMana * 0.2;
+
+        if(manaRecovery+getMana() > maxMana){
+            setMana(maxMana);
+        } else {
+            int addMana = (int) manaRecovery + getMana();
+            setMana(addMana);
+        }
+
         return damage;
     }
 
     public int skill1(){
-        int damage = multiplier1(attack, level);
-        System.out.println(name + " used (Skill 1 Name)!");
-        System.out.println("(Skill 1 Name) deals " + damage + " damage!");
+        setCooldown1(skillCd1);
+
+        int damage = multiplier1(getAttack(), getLevel());
+
+        int manaReduce = getMana() - manaCostSkill1;
+        setMana(manaReduce);
+
         return damage;
     }
 
     public int skill2(){
-        int damage = multiplier2(attack, level);
-        System.out.println(name + " used (Skill 2 Name)!");
-        System.out.println("(Skill 2 Name) deals " + damage + " damage!");
+        setCooldown2(skillCd2);
+
+        int damage = multiplier2(getAttack(), getLevel());
+
+        int manaReduce = getMana() - manaCostSkill2;
+        setMana(manaReduce);
+
         return damage;
     }
 
     public int ultimate(){
-        int damage = multiplierU(attack, level);
-        System.out.println(name + " used (Ultimate Name)!");
-        System.out.println("(Ultimate Name) deals " + damage + " damage!");
+        setCooldownU(skillCdU);
+
+        int damage = multiplierU(getAttack(), getLevel());
+
+        int manaReduce = getMana() - manaCostUltimate;
+        setMana(manaReduce);
+
         return damage;
     }
 
@@ -141,6 +178,30 @@ public class Hero {
         return ultimate;
     }
 
+    public int getManaCostSkill1(){
+        return manaCostSkill1;
+    }
+
+    public int getManaCostSkill2(){
+        return manaCostSkill2;
+    }
+
+    public int getManaCostUltimate(){
+        return manaCostUltimate;
+    }
+
+    public int getCooldown1() {
+        return cooldown1;
+    }
+
+    public int getCooldown2() {
+        return cooldown2;
+    }
+
+    public int getCooldownU() {
+        return cooldownU;
+    }
+
     // Setters
     public void setHp(int hp) {
         this.hp = hp;
@@ -180,6 +241,18 @@ public class Hero {
 
     public void setWeapon(String weapon) {
         this.weapon = weapon;
+    }
+
+    public void setCooldown1(int cd1) {
+        cooldown1 = cd1;
+    }
+
+    public void setCooldown2(int cd2) {
+        cooldown2 = cd2;
+    }
+
+    public void setCooldownU(int cdU) {
+        cooldownU = cdU;
     }
 
     // Javines _________________________________________________________________________________________

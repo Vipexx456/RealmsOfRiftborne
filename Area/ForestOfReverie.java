@@ -1,12 +1,13 @@
 package Area;
 import BattleMechanics.BattleMechanic;
-import java.util.Random;
-import java.util.Scanner;
 import Hero.*;
+import Boss.*;
+import java.util.*;
 
 public class ForestOfReverie {
     static Random rand = new Random();
     static Scanner scan = new Scanner(System.in);
+    static Boss enemyBoss = new Elderthorn();
 
     public void enter(Hero hero) {
         System.out.println();
@@ -15,28 +16,28 @@ public class ForestOfReverie {
         System.out.println("└────────────────────────────────────────────┘");
         System.out.println();
 
-        exploreEntry();
+        exploreEntry(hero);
     }
 
-    public void exploreEntry() {
+    public void exploreEntry(Hero hero) {
         System.out.print("\nDo you want to explore the Forest of Reverie? (y/n): ");
         char choice = scan.next().toLowerCase().charAt(0);
         System.out.println();
 
         if (choice == 'y') {
             System.out.println("Exploring the mystical Forest of Reverie...");
-            exploreOutsideArea();
+            exploreOutsideArea(hero);
         } else if (choice == 'n'){
             System.out.println("You chose not to explore the Forest of Reverie.");
             exit();
         } else {
             System.out.println("Invalid choice. Please enter 'y' or 'n'.");
             System.out.println();
-            exploreEntry();
+            exploreEntry(hero);
         }
     }
 
-    public void exploreOutsideArea() {
+    public void exploreOutsideArea(Hero hero) {
         boolean valid = true;
         boolean explore = true;
 
@@ -56,12 +57,12 @@ public class ForestOfReverie {
             char choice = scan.next().toLowerCase().charAt(0);
 
             if (choice == 'y') {
-                exploreMiddleArea();
+                exploreMiddleArea(hero);
                 valid = false;
             } else if (choice == 'n'){
                 System.out.println("\nYou chose to head back and return to the forest entrance.");
                 valid = false;
-                exploreEntry();
+                exploreEntry(hero);
             } else {
                 System.out.println("Invalid choice. Please enter 'y' or 'n'.");
                 System.out.println();
@@ -69,7 +70,7 @@ public class ForestOfReverie {
         }
     }
 
-    public void exploreMiddleArea() {
+    public void exploreMiddleArea(Hero hero) {
         boolean valid = true;
         boolean explore = true;
 
@@ -88,12 +89,12 @@ public class ForestOfReverie {
             char choice = scan.next().toLowerCase().charAt(0);
 
             if (choice == 'y') {
-                exploreInnerArea();
+                exploreInnerArea(hero);
                 valid = false;
             } else if (choice == 'n'){
                 System.out.println("\nYou chose to head back and return to the previous area.");
                 valid = false;
-                exploreOutsideArea();
+                exploreOutsideArea(hero);
             } else {
                 System.out.println("Invalid choice. Please enter 'y' or 'n'.");
                 System.out.println();
@@ -101,7 +102,7 @@ public class ForestOfReverie {
         }
     }
 
-    public void exploreInnerArea() {
+    public void exploreInnerArea(Hero hero) {
         boolean valid = true;
         boolean explore = true;
         BattleMechanic battle = new BattleMechanic();
@@ -140,12 +141,12 @@ public class ForestOfReverie {
                 System.out.println("┌────────────────────┐");
                 System.out.println("│       BATTLE       │");
                 System.out.println("└────────────────────┘");
-                battle.fight();
+                battle.fight(hero, enemyBoss);
                 valid = false; // Exit the loop after handling the choice
             } else if (choice == 'n'){
                 System.out.println("\nYou chose to avoid the Forest Guardian, Elderthorn and head back to the previous area.");
                 valid = false;
-                exploreMiddleArea();
+                exploreMiddleArea(hero);
             } else {
                 System.out.println("Invalid choice. Please enter 'y' or 'n'.");
                 System.out.println();
