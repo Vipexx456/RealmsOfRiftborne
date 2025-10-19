@@ -1,8 +1,12 @@
 package Area;
 import BattleMechanics.BattleMechanic;
-import Hero.*;
+import BattleMechanics.EliteBattleMechanic;
+import BattleMechanics.MobBattleMechanic;
 import Boss.*;
-
+import Hero.*;
+import Mobs.Goblin;
+import Mobs.MudLurker;
+import Mobs.Slime;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -10,6 +14,8 @@ public class ForestOfReverie {
     static Random rand = new Random();
     static Scanner scan = new Scanner(System.in);
     DecimalFormat df = new DecimalFormat("#,##0");
+    MobBattleMechanic mobBattle = new MobBattleMechanic();
+    EliteBattleMechanic eliteBattle = new EliteBattleMechanic();    
     boolean retreat = false;
     boolean explore = true;
     boolean exit = false;
@@ -86,7 +92,8 @@ public class ForestOfReverie {
         if(explore){
             if(rand.nextBoolean()){
                 System.out.println("You are exploring the forest then suddenly a wild creature appears to attack!");
-                // insert mob battle
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, new MudLurker());
             } else {
                 System.out.println("The forest feels calm and serene as you wander among the tall trees.");
             }
@@ -95,7 +102,9 @@ public class ForestOfReverie {
         if(retreat){
             if(rand.nextBoolean()){
                 System.out.println("You see the forest entrance ahead, but an angry mob blocks your way!");
-                //insert mob battle
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, randomMob());
+
             } else {
                 System.out.println("You reach the forest entrance without any problems.");
             }
@@ -141,7 +150,7 @@ public class ForestOfReverie {
         if(explore){
             if(rand.nextBoolean()){
                 System.out.println("You are exploring deeper into the forest when suddenly a wild creature appears to attack!");
-                //insert mob battle
+                mobBattle.fight(hero, randomMob());
             } else {
                 System.out.println("You walk deeper into the forest, admiring its mystical beauty.");
             }
@@ -150,7 +159,7 @@ public class ForestOfReverie {
         if(retreat){
             if(rand.nextBoolean()){
                 System.out.println("As you head back, a lurking creature jumps from the shadows!");
-                //insert mob battle
+                mobBattle.fight(hero, randomMob());
             } else {
                 System.out.println("You return safely from the inner forest area.");
             }
@@ -189,7 +198,7 @@ public class ForestOfReverie {
         if(explore){
             if(rand.nextBoolean()){
                 System.out.println("You venture into the innermost part of the forest... \n\nSuddenly, a strong creature appears to attack!");
-                // insert elite mob battle
+                mobBattle.fight(hero, randomMob());
             } else {
                 System.out.println("You are peacefully exploring the innermost part of the forest \n\nand noticed that the forest has clawed trees and dark atmosphere.");
             }
@@ -278,6 +287,18 @@ public class ForestOfReverie {
         
         System.out.println(); 
     }
+    
+    public Entity randomMob(){
+        int choice = rand.nextInt(3);
+
+        if(choice == 0){
+            return new Goblin();
+        } else if(choice == 1) {
+            return new Slime();
+        } else {
+            return new MudLurker();
+        }
+    }
 
     public void exit() {
         System.out.println();
@@ -288,5 +309,7 @@ public class ForestOfReverie {
         System.out.println();
 
     }
+    
+
 }
 

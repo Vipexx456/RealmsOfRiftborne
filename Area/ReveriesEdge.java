@@ -1,8 +1,13 @@
 package Area;
-
 import BattleMechanics.BattleMechanic;
+import BattleMechanics.EliteBattleMechanic;
+import BattleMechanics.MobBattleMechanic;
 import Boss.*;
 import Hero.*;
+import Mobs.FadingWarden;
+import Mobs.HollowKing;
+import Mobs.SwampRat;
+import Mobs.VeilSerpent;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -10,12 +15,15 @@ public class ReveriesEdge {
     static Random rand = new Random();
     static Scanner scan = new Scanner(System.in);
     DecimalFormat df = new DecimalFormat("#,##0");
+    MobBattleMechanic mobBattle = new MobBattleMechanic();
+    EliteBattleMechanic eliteBattle = new EliteBattleMechanic();
     boolean retreat = false;
     boolean explore = true;
     boolean exit = false;
     int currentArea = 0;
-
+    
     public void enter(Hero hero) {
+        hero.levelUp(101);
         System.out.println();
         System.out.println("┌────────────────────────────────────────────┐");
         System.out.println("│        You have entered Reverie's Edge     │");
@@ -84,7 +92,8 @@ public class ReveriesEdge {
         if(explore){
             if(rand.nextBoolean()){
                 System.out.println("A corrupted beast emerges from the shadows!");
-                // insert mob battle
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, new FadingWarden());
             } else {
                 System.out.println("You hear whispers carried by the wind, but nothing appears.");
             }
@@ -93,7 +102,8 @@ public class ReveriesEdge {
         if(retreat){
             if(rand.nextBoolean()){
                 System.out.println("You try to leave, but a lurking shade attacks!");
-                // insert mob battle
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, new FadingWarden());
             } else {
                 System.out.println("You safely return to the forest boundary.");
             }
@@ -136,7 +146,8 @@ public class ReveriesEdge {
         if(explore){
             if(rand.nextBoolean()){
                 System.out.println("A shadowy creature blocks your path!");
-                // insert mob battle
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, new FadingWarden());
             } else {
                 System.out.println("You walk through the dim mist, hearing distant growls...");
             }
@@ -145,7 +156,8 @@ public class ReveriesEdge {
         if(retreat){
             if(rand.nextBoolean()){
                 System.out.println("Something follows you as you retreat, preparing to strike!");
-                // insert mob battle
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, new FadingWarden());
             } else {
                 System.out.println("You carefully retrace your steps to the outer edge.");
             }
@@ -183,7 +195,8 @@ public class ReveriesEdge {
         if(explore){
             if(rand.nextBoolean()){
                 System.out.println("You walk through an eerie clearing... and the ground trembles!");
-                // insert elite mob battle
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, new FadingWarden());
             } else {
                 System.out.println("The place feels corrupted — twisted roots and ash cover the ground.");
             }
@@ -266,6 +279,18 @@ public class ReveriesEdge {
         }
         System.out.println(); 
     }
+    
+    public Entity randomMob(){
+        int choice = rand.nextInt(3);
+
+        if(choice == 0){
+            return new SwampRat();
+        } else if(choice == 1) {
+            return new VeilSerpent();
+        } else {
+            return new HollowKing();
+        }
+    }
 
     public void exit() {
         System.out.println();
@@ -275,4 +300,6 @@ public class ReveriesEdge {
         System.out.println("└────────────────────────────────────────────┘");
         System.out.println();
     }
+
+    
 }

@@ -1,8 +1,12 @@
 package Area;
-
 import BattleMechanics.BattleMechanic;
+import BattleMechanics.EliteBattleMechanic;
+import BattleMechanics.MobBattleMechanic;
 import Boss.*;
 import Hero.*;
+import Mobs.HollowKing;
+import Mobs.ShadowAbyss;
+import Mobs.VoidBeast;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -10,6 +14,8 @@ public class ForsakenLands {
     static Random rand = new Random();
     static Scanner scan = new Scanner(System.in);
     DecimalFormat df = new DecimalFormat("#,##0");
+    MobBattleMechanic mobBattle = new MobBattleMechanic();
+    EliteBattleMechanic eliteBattle = new EliteBattleMechanic();
     boolean retreat = false;
     boolean explore = true;
     boolean exit = false;
@@ -84,7 +90,8 @@ public class ForsakenLands {
         if(explore){
             if(rand.nextBoolean()){
                 System.out.println("A wandering husk of a fallen warrior approaches!");
-              
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, new HollowKing());
             } else {
                 System.out.println("You walk among desolate plains, feeling unseen eyes upon you...");
             }
@@ -93,7 +100,8 @@ public class ForsakenLands {
         if(retreat){
             if(rand.nextBoolean()){
                 System.out.println("Something crawls from the ashes to block your retreat!");
-                // insert mob battle
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, new HollowKing());
             } else {
                 System.out.println("You turn back and leave the lifeless wasteland behind.");
             }
@@ -136,7 +144,8 @@ public class ForsakenLands {
         if(explore){
             if(rand.nextBoolean()){
                 System.out.println("From the ruins, a twisted wraith rises and attacks!");
-                // insert mob battle
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, new HollowKing());
             } else {
                 System.out.println("You step through the remains of a forgotten kingdom...");
             }
@@ -145,7 +154,8 @@ public class ForsakenLands {
         if(retreat){
             if(rand.nextBoolean()){
                 System.out.println("A cursed spirit follows you as you retreat!");
-                // insert mob battle
+                mobBattle.fight(hero, randomMob());
+                eliteBattle.fight(hero, new HollowKing());
             } else {
                 System.out.println("You quietly leave the ruined city behind.");
             }
@@ -183,7 +193,7 @@ public class ForsakenLands {
         if(explore){
             if(rand.nextBoolean()){
                 System.out.println("The air grows thick... the ground trembles beneath your feet...");
-                // insert elite mob battle
+                mobBattle.fight(hero, randomMob());
             } else {
                 System.out.println("You reach the heart of desolation, where no life stirs...");
             }
@@ -266,6 +276,18 @@ public class ForsakenLands {
         }
         System.out.println(); 
     }
+    
+    public Entity randomMob(){
+        int choice = rand.nextInt(3);
+
+        if(choice == 0){
+            return new ShadowAbyss();
+        } else if(choice == 1) {
+            return new VoidBeast();
+        } else {
+            return new HollowKing();
+        }
+    }
 
     public void exit() {
         System.out.println();
@@ -275,4 +297,6 @@ public class ForsakenLands {
         System.out.println("└────────────────────────────────────────────┘");
         System.out.println();
     }
+
+    
 }
