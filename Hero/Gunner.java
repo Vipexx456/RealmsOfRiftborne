@@ -6,10 +6,10 @@ public class Gunner extends Hero {
     private int skillCd1, skillCd2, skillCdU;
 
     public Gunner() {
-        super(4000, 535, 600, 125, 125, 20, "Aria Caelith", "Gunner", "Rusty Dual Pistol", "Crimson Barrage", "Frostwind Bullet", "Judgement Phantom", 35, 85, 325, 1500, 1530, 650);
-        this.skillCd1 = 3;
-        this.skillCd2 = 5;
-        this.skillCdU = 8;
+        super(4000, 535, 600, 125, 150, 20, "Aria Caelith", "Gunner", "Rusty Dual Pistol", "Crimson Barrage", "Frostwind Bullet", "Judgement Phantom", 150, 275, 450, 1500, 1530, 650);
+        this.skillCd1 = 4;
+        this.skillCd2 = 7;
+        this.skillCdU = 10;
     }
 
     DecimalFormat df = new DecimalFormat("#,##0");
@@ -17,7 +17,6 @@ public class Gunner extends Hero {
    @Override
     public void basicAttack(Hero hero, Entity enemy) {
         System.out.println(getName() + " used Basic Attack!");
-        if(enemy.dodgeHeroAtk(enemy, hero)) return;
 
         int damage = multiplierB(getAttack(), getLevel());
         
@@ -30,6 +29,8 @@ public class Gunner extends Hero {
             setMana(addMana);
         }
 
+        if(enemy.dodgeHeroAtk(enemy, hero)) return;
+
         int damageDealt = damage - enemy.getDefense()/2;
 
         System.out.println("Basic Attack deals " + df.format(damageDealt) + " damage!");
@@ -41,12 +42,13 @@ public class Gunner extends Hero {
     public void skill1(Hero hero, Entity enemy){
         System.out.println(getName() + " used " + getSkill1() + "!");
         setCooldown1(skillCd1);
-        if(enemy.dodgeHeroAtk(enemy, hero)) return;
 
         int damage = multiplier1(getAttack(), getLevel());
 
         int manaReduce = getMana() - scaledCost(getManaCostSkill1());
         setMana(manaReduce);
+
+        if(enemy.dodgeHeroAtk(enemy, hero)) return;
 
         int damageDealt = damage - enemy.getDefense()/2;
 
@@ -59,12 +61,13 @@ public class Gunner extends Hero {
     public void skill2(Hero hero, Entity enemy){
         System.out.println(getName() + " used " + getSkill2() + "!");
         setCooldown2(skillCd2);
-        if(enemy.dodgeHeroAtk(enemy, hero)) return;
 
         int damage = multiplier2(getAttack(), getLevel());
 
         int manaReduce = getMana() - scaledCost(getManaCostSkill2());
         setMana(manaReduce);
+
+        if(enemy.dodgeHeroAtk(enemy, hero)) return;
 
          int damageDealt = damage - enemy.getDefense()/2;
 
@@ -89,5 +92,29 @@ public class Gunner extends Hero {
 
         enemy.setHp(enemy.getHp() - damageDealt);
     }
-    
+
+    @Override
+    public int multiplierB(int atk, int L) {
+        double multiplier = 0.9 + 0.7 * ((L - 1) / 59.0); // up to ~1.6x
+        return (int) Math.round(atk * multiplier);
+    }
+
+    @Override
+    public int multiplier1(int atk, int L) {
+        double multiplier = 1.1 + 1.5 * ((L - 1) / 59.0); // up to ~2.6x
+        return (int) Math.round(atk * multiplier);
+    }
+
+    @Override
+    public int multiplier2(int atk, int L) {
+        double multiplier = 1.3 + 2.3 * ((L - 1) / 59.0); // up to ~3.6x
+        return (int) Math.round(atk * multiplier);
+    }
+
+    @Override
+    public int multiplierU(int atk, int L) {
+        double multiplier = 1.6 + 3.2 * ((L - 1) / 59.0); // up to ~4.8x
+        return (int) Math.round(atk * multiplier);
+    }
+
 }

@@ -20,7 +20,6 @@ public class Azrael extends Boss {
     @Override
     public void basicAttack(Entity enemy, Hero hero) {
         System.out.println(getName() + " used Basic Attack!");
-        if(hero.dodgeEnemyAtk(hero, enemy)) return;
 
         double damage = getAttack() * 1.1;
 
@@ -32,6 +31,8 @@ public class Azrael extends Boss {
             int addMana = (int) manaRecovery + getMana();
             setMana(addMana);
         }
+
+        if(hero.dodgeEnemyAtk(hero, enemy)) return;
 
         int damageDealt = (int) Math.round(damage) - hero.getDefense()/2;
 
@@ -45,12 +46,13 @@ public class Azrael extends Boss {
         System.out.println(getName() + " used " + getSkill1() + "!");
 
         setCooldown1(skillCd1);
-        if(hero.dodgeEnemyAtk(hero, enemy)) return;
 
         double damage = getAttack() * 1.5;
 
         int manaReduce = getMana() - getManaCostSkill1();
         setMana(manaReduce);
+
+        if(hero.dodgeEnemyAtk(hero, enemy)) return;
 
         int damageDealt = (int) Math.round(damage) - hero.getDefense()/2;
 
@@ -65,12 +67,13 @@ public class Azrael extends Boss {
         System.out.println(getName() + " used " + getSkill2() + "!");
 
         setCooldown2(skillCd2);
-        if(hero.dodgeEnemyAtk(hero, enemy)) return;
         
         double damage = getAttack() * 1.8;
 
         int manaReduce = getMana() - getManaCostSkill2();
         setMana(manaReduce);
+
+        if(hero.dodgeEnemyAtk(hero, enemy)) return;
 
         int damageDealt = (int) Math.round(damage) - hero.getDefense()/2;
 
@@ -84,12 +87,13 @@ public class Azrael extends Boss {
         System.out.println(getName() + " used " + getSkill3() + "!");
 
         setCooldown3(skillCd3);
-        if(hero.dodgeEnemyAtk(hero, enemy)) return;
 
         double damage = getAttack() * 1.9;
 
         int manaReduce = getMana() - getManaCostSkill3();
         setMana(manaReduce);
+
+        if(hero.dodgeEnemyAtk(hero, enemy)) return;
 
         int damageDealt = (int) Math.round(damage) - hero.getDefense()/2;
 

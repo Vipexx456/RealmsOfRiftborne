@@ -126,25 +126,25 @@ public class Hero {
     }
 
     //damage multiplier methods
-    public static int multiplierB(int atk, int L) {
+    public int multiplierB(int atk, int L) {
         double multiplier = 1.0 + Math.pow((L - 1) / 59.0, 2);
         double damageDealt = atk * multiplier;
         return (int) Math.round(damageDealt);
     }
 
-    public static int multiplier1(int atk, int L) {
+    public int multiplier1(int atk, int L) {
         double multiplier = 1.0 + 1.5 * Math.pow((L - 1) / 59.0, 2);
         double damageDealt = atk * multiplier;
         return (int) Math.round(damageDealt);
     }
 
-    public static int multiplier2(int atk, int L) {
+    public int multiplier2(int atk, int L) {
         double multiplier = 1.0 + 2.0 * Math.pow((L - 1) / 59.0, 2);
         double damageDealt = atk * multiplier;
         return (int) Math.round(damageDealt);
     }
 
-    public static int multiplierU(int atk, int L) {
+    public int multiplierU(int atk, int L) {
         double multiplier = 1.0 + 2.5 * Math.pow((L - 1) / 59.0, 2);
         double damageDealt = atk * multiplier;
         return (int) Math.round(damageDealt);

@@ -6,10 +6,10 @@ public class Mage extends Hero {
     private int skillCd1, skillCd2, skillCdU;
 
     public Mage() {
-        super(4000, 550, 1000, 180, 90, 20, "Selene Arclight", "Mage", "Wooden Staff", "Stellar Shard", "Chains of Starlight", "Astral Cataclysm", 200, 425, 850, 2000, 2500, 570);
-        this.skillCd1 = 4;
-        this.skillCd2 = 6;
-        this.skillCdU = 9;
+        super(4000, 550, 1000, 180, 90, 20, "Selene Arclight", "Mage", "Wooden Staff", "Stellar Shard", "Chains of Starlight", "Astral Cataclysm", 275, 545, 850, 2000, 2500, 570);
+        this.skillCd1 = 6;
+        this.skillCd2 = 8;
+        this.skillCdU = 12;
     }
 
     DecimalFormat df = new DecimalFormat("#,##0");
@@ -17,7 +17,6 @@ public class Mage extends Hero {
    @Override
     public void basicAttack(Hero hero, Entity enemy) {
         System.out.println(getName() + " used Basic Attack!");
-        if(enemy.dodgeHeroAtk(enemy, hero)) return;
 
         int damage = multiplierB(getAttack(), getLevel());
         
@@ -30,6 +29,8 @@ public class Mage extends Hero {
             setMana(addMana);
         }
 
+        if(enemy.dodgeHeroAtk(enemy, hero)) return;
+
         int damageDealt = damage - enemy.getDefense()/2;
 
         System.out.println("Basic Attack deals " + df.format(damageDealt) + " damage!");
@@ -41,12 +42,13 @@ public class Mage extends Hero {
     public void skill1(Hero hero, Entity enemy){
         System.out.println(getName() + " used " + getSkill1() + "!");
         setCooldown1(skillCd1);
-        if(enemy.dodgeHeroAtk(enemy, hero)) return;
 
         int damage = multiplier1(getAttack(), getLevel());
 
         int manaReduce = getMana() - scaledCost(getManaCostSkill1());
         setMana(manaReduce);
+
+        if(enemy.dodgeHeroAtk(enemy, hero)) return;
 
         int damageDealt = damage - enemy.getDefense()/2;
 
@@ -59,12 +61,13 @@ public class Mage extends Hero {
     public void skill2(Hero hero, Entity enemy){
         System.out.println(getName() + " used " + getSkill2() + "!");
         setCooldown2(skillCd2);
-        if(enemy.dodgeHeroAtk(enemy, hero)) return;
 
         int damage = multiplier2(getAttack(), getLevel());
 
         int manaReduce = getMana() - scaledCost(getManaCostSkill2());
         setMana(manaReduce);
+
+        if(enemy.dodgeHeroAtk(enemy, hero)) return;
 
          int damageDealt = damage - enemy.getDefense()/2;
 
@@ -89,4 +92,29 @@ public class Mage extends Hero {
 
         enemy.setHp(enemy.getHp() - damageDealt);
     }
+
+    @Override
+    public int multiplierB(int atk, int L) {
+        double multiplier = 0.8 + 0.8 * ((L - 1) / 59.0); // up to ~1.6x
+        return (int) Math.round(atk * multiplier);
+    }
+
+    @Override
+    public int multiplier1(int atk, int L) {
+        double multiplier = 1.2 + 2.0 * ((L - 1) / 59.0); // up to ~3.2x
+        return (int) Math.round(atk * multiplier);
+    }
+
+    @Override
+    public int multiplier2(int atk, int L) {
+        double multiplier = 1.5 + 3.0 * ((L - 1) / 59.0); // up to ~4.5x
+        return (int) Math.round(atk * multiplier);
+    }
+
+    @Override
+    public int multiplierU(int atk, int L) {
+        double multiplier = 1.8 + 4.0 * ((L - 1) / 59.0); // up to ~5.8x
+        return (int) Math.round(atk * multiplier);
+    }
+
 }
