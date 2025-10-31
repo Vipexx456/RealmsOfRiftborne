@@ -2,6 +2,7 @@ package Menu;
 
 import Hero.*;
 import Narration.*;
+import DesignRelated.*;
 
 import java.util.Scanner;
 
@@ -9,41 +10,43 @@ public class CharacterMenu extends Narration{
     Scanner scanner = new Scanner(System.in);
 
     public Hero chooseCharacterMenu(){
+        MenuRelated designRelatedMenu = new MenuRelated();
+        InnerCharacterMenu innerCharacterMenuHandler = new InnerCharacterMenu();
 
         while(true){
-            System.out.println("+------------------------------+");
-            System.out.println("|      Choose a character      |");
-            System.out.println("|------------------------------|");
-            System.out.println("|  [1] Swordsman               |");
-            System.out.println("|  [2] Gunner                  |");
-            System.out.println("|  [3] Mage                    |");
-            System.out.println("+------------------------------+");
-            System.out.print("-->| ");
 
-            String characterChoiceStr = scanner.nextLine();
+            designRelatedMenu.characterChoiceMenu();
 
             try {
-                int characterChoice = Integer.parseInt(characterChoiceStr); 
+                int characterChoice = scanner.nextInt(); 
+                Hero hero = null;
 
                 switch(characterChoice){
                     case 1:  
-                        choiceSwordsman();
-                        return new Swordsman();
+                        hero = innerCharacterMenuHandler.playerSwordsman();
+                        break;
 
                     case 2:
-                        choiceGunner();
-                        return new Gunner();
+                        hero = innerCharacterMenuHandler.playerGunner();
+                        break;
 
                     case 3: 
-                        choiceMage();
-                        return new Mage();
+                        hero = innerCharacterMenuHandler.playerMage();
+                        break;
 
                     default:
                         System.out.println();
                         System.out.println("┌─────────────────────────────────────┐");
                         System.out.println("│  Oops! Invalid choice. Try again.   │");
                         System.out.println("└─────────────────────────────────────┘");
+                        continue;
                 }
+
+                if(hero == null) {
+                    continue;
+                }
+
+                return hero;
 
             } catch (NumberFormatException e) {
                 System.out.println();
@@ -60,51 +63,3 @@ public class CharacterMenu extends Narration{
         }
     }
 }
-
-/*package Menu;
-
-import Hero.*;
-import Narration.*;
-
-import java.util.Scanner;
-
-public class CharacterMenu extends Narration{
-    Scanner scanner = new Scanner(System.in);
-
-    public Hero chooseCharacterMenu(){
-
-        while(true){
-            System.out.println("+------------------------------+");
-            System.out.println("|      Choose a character      |");
-            System.out.println("|------------------------------|");
-            System.out.println("|  [1] Swordsman               |");
-            System.out.println("|  [2] Gunner                  |");
-            System.out.println("|  [3] Mage                    |");
-            System.out.println("+------------------------------+");
-            System.out.print("-->| ");
-
-            String characterChoice = scanner.nextLine();
-
-            switch(characterChoice){
-                case "1":  
-                    choiceSwordsman();
-                    return new Swordsman();
-
-                case "2":
-                    choiceGunner();
-                    return new Gunner();
-
-                case "3": 
-                    choiceMage();
-                    return new Mage();
-
-                default:
-                    System.out.println();
-                    System.out.println("┌─────────────────────────────────────┐");
-                    System.out.println("│  Oops! Invalid choice. Try again.   │");
-                    System.out.println("└─────────────────────────────────────┘");
-            }
-        }
-    }
-}
-    */

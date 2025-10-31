@@ -3,43 +3,41 @@ package Menu;
 import Hero.*;
 import Narration.*;
 import Area.*;
+import DesignRelated.*;
 
+import java.text.DecimalFormat;
 import java.util.Scanner;
 
 public class Menu extends Narration {
+
     static Scanner scanner = new Scanner(System.in);
+    static DecimalFormat df = new DecimalFormat("0.00");
 
     public void mainMenu(Hero hero){
         AcademyMenu handler = new AcademyMenu();
         ForestOfReverie forest = new ForestOfReverie();
         ReveriesEdge reverieEdge = new ReveriesEdge();
         ForsakenLands forsakenLands = new ForsakenLands();
+        AcademyMap mapHandler = new AcademyMap();
+        IntroTitle exitHandler = new IntroTitle();
+        ShopRelated shopPromptHandler = new ShopRelated();
+        MenuRelated menuRelatedHandler = new MenuRelated();
+
 
         while(true){
-            System.out.println("+------------------------------------------+");
-            System.out.println("|    --- MYSTVALE ACADEMY MAIN MENU ---    |");
-            System.out.println("+------------------------------------------+");
-            System.out.println("| [1] Go to Academy                        |");
-            System.out.println("| [2] Shop                                 |");
-            System.out.println("| [3] Inventory                            |");
-            System.out.println("| [4] The Forest of Reverie                |");
-            System.out.println("| [5] The Reverie Edge                     |");
-            System.out.println("| [6] The Forsaken Lands                   |");
-            System.out.println("| [7] Exit Game                            |");
-            System.out.println("+------------------------------------------+");
-            System.out.println("┌──────────────────────────────┐");
-            System.out.println("│   Where do you want to go?   │");
-            System.out.println("└──────────────────────────────┘");
+
+            menuRelatedHandler.mainMenu();
             System.out.print("-->| ");
 
-            String mainMenuChoiceStr = scanner.nextLine();
-            System.out.println();
-
             try {
-                int mainMenuChoice = Integer.parseInt(mainMenuChoiceStr); // convert input to int
 
+                int mainMenuChoice = scanner.nextInt();
+                
                 switch (mainMenuChoice){
                     case 1:
+
+                        mapHandler.academyMap();
+
                         if (!hero.hasVisitedAcademy()) {
                             academyNarration();
                             hero.setHasVisitedAcademy(true);
@@ -59,17 +57,13 @@ public class Menu extends Narration {
                         break;
 
                     case 2:
+
+                        shopPromptHandler.shopPrompt();
+
                         if (!hero.hasVisitedShop()) {
                             shopNarration();
                             hero.setHasVisitedShop(true);
                         }
-
-                        System.out.println();
-                        System.out.println(">>>>> - - - - - - - - - -  - - - <<<<<");
-                        System.out.println("     ┌──────────────────────────┐");
-                        System.out.println("     │    Welcome to the shop   │");
-                        System.out.println("     └──────────────────────────┘");
-                        System.out.println(">>>>> - - - - - - - - - -  - - - <<<<<");
 
                         //shopFunction();
                         shopConversationNarration();
@@ -78,16 +72,12 @@ public class Menu extends Narration {
                     case 3:
                         boolean isInventoryEmpty = false; // default case since wala pay inventory
 
+                        shopPromptHandler.inventoryPrompt();
+
                         if (!hero.hasOpenedInventory()) {
                             inventoryNarration();
                             hero.setHasOpenedInventory(true);
                         }
-                        System.out.println();
-                        System.out.println(">>>>> - - - - - - - - - - -  - - <<<<<");
-                        System.out.println("     ┌───────────────────────────┐");
-                        System.out.println("     │   This is your invetory   │");
-                        System.out.println("     └───────────────────────────┘");
-                        System.out.println(">>>>> - - - - - - - - - - - - - - <<<<<");
 
                         if(!isInventoryEmpty){
                             System.out.println("┌───────────────────────────────────────┐");
@@ -197,7 +187,21 @@ public class Menu extends Narration {
                         break;
 
                     case 7:
-                        while(true) {
+                        System.out.println("Character Current Stats");
+                        System.out.println("> Health: " + hero.getHp());
+                        System.out.println("> Attack: " + hero.getAttack());
+                        System.out.println("> Mana: " + hero.getMana());
+                        System.out.println("> Defense: " + hero.getDefense());
+
+                        // Part ni Ray haha
+
+                        break;
+                        
+
+                    case 8:
+                        boolean confirmExit = true;
+
+                        while(confirmExit) {
                             System.out.println("┌───────────────────────────────────────────────────┐");
                             System.out.println("│   Are you sure you want to quit playing? (y/n)    │");
                             System.out.println("└───────────────────────────────────────────────────┘");
@@ -209,16 +213,8 @@ public class Menu extends Narration {
                                 switch (ifWantToQuit) {
                                     case "y":
                                     case "Y":
-                                        System.out.println();
-                                        System.out.println(">>>>> - - - - - - - - - - - - - - - - - - - - - - - - - - <<<<<");
-                                        System.out.println("                  ┌──────────────────────────┐");
-                                        System.out.println("                  │   >>> Exiting Game <<<   │");
-                                        System.out.println("                  └──────────────────────────┘");
-                                        System.out.println("     ┌────────────────────────────────────────────────────┐");
-                                        System.out.println("     │   Magic settles in the air as you take your leave  │");
-                                        System.out.println("     │     Your story's unfinished. See you next time!    │");
-                                        System.out.println("     └────────────────────────────────────────────────────┘");
-                                        System.out.println(">>>>> - - - - - - - - - - - - - - - - - - - - - - - - - - <<<<<");
+
+                                        exitHandler.exitingUnfinishedGame();
 
                                         System.exit(0);
                                         break;
@@ -232,7 +228,8 @@ public class Menu extends Narration {
                                         System.out.println("┌───────────────────────────┐");
                                         System.out.println("│   Returning to Main Menu  │");
                                         System.out.println("└───────────────────────────┘");
-                                        return; 
+                                        confirmExit = false; 
+                                        break;
 
                                     default:
                                         System.out.println();
@@ -249,6 +246,8 @@ public class Menu extends Narration {
                                 scanner.nextLine(); 
                             }
                         }
+
+                        break;
 
                     default:
                         System.out.println();
@@ -271,5 +270,4 @@ public class Menu extends Narration {
             }
         }
     }
-
 }

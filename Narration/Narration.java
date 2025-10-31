@@ -230,7 +230,86 @@ public class Narration{
     }
 
     //box format
-    public static void choiceSwordsman(){
+    public void swordsmanDetails() { // implemented through revision
+        System.out.println();
+        System.out.println("┌────────────────────┐");
+        System.out.println("│  Player Character  │");
+        System.out.println("└────────────────────┘");
+        System.out.println("┌────────────────────────────────────────────────────────────┐");
+        System.out.println("│                      Kael Solmere - Details                │");
+        System.out.println("├────────────────────────────────────────────────────────────┤");
+        System.out.println("│ Name: Kael Solmere                                         │");
+        System.out.println("│ Age: 15                                                    │");
+        System.out.println("│ Personality: Intense, Brooding, Fiercely Loyal             │");
+        System.out.println("│ Grade Level: First Year                                    │");
+        System.out.println("│ Fun Facts:                                                 │");
+        System.out.println("│   - Siblings with Aria Caelith                             │");
+        System.out.println("│   - Talks to his shadow when thinking                      │");
+        System.out.println("│   - Collects old maps and mysterious relics                │");
+        System.out.println("│   - Can\'t resist chocolate during stressful situations     │");
+        System.out.println("│   - Has a soft spot for stray animals                      │");
+        System.out.println("└────────────────────────────────────────────────────────────┘");
+        System.out.println("┌──────────────────────────────┐");
+        System.out.println("│   Press ENTER to continue    │");
+        System.out.println("└──────────────────────────────┘");
+        scanner.nextLine();
+        System.out.println();
+
+    }
+
+    public void swordsmanStats() { // implemented through revision
+        System.out.println();
+        System.out.println("┌───────────────────────────────────────────┐");
+        System.out.println("│      Kael Solmere - The Blade of Dawn     │");
+        System.out.println("│               Combat Overview             │");
+        System.out.println("│-------------------------------------------│");
+        System.out.println("│  Swordsman (MAX LVL: 60)                  │");
+        System.out.println("│  Basic Attack                             │");
+        System.out.println("│  Skill 1 - Blade Dance                    │");
+        System.out.println("│  Skill 2 - Blinding Silhouette            │");
+        System.out.println("│  Ultimate - Shattered Sun                 │");
+        System.out.println("│                                           │");
+        System.out.println("│  HP (Health Points): 4000                 │");
+        System.out.println("│  MP (Mana Points):    700                 │");
+        System.out.println("│  ATK (Attack):        500                 │");
+        System.out.println("│  DEF (Defence):       350                 │");
+        System.out.println("│  SPD (Speed):         200                 │");
+        System.out.println("└───────────────────────────────────────────┘");
+
+        System.out.println("┌──────────────────────────────┐");
+        System.out.println("│   Press ENTER to continue    │");
+        System.out.println("└──────────────────────────────┘");
+        scanner.nextLine();
+        System.out.println();
+
+    }
+
+    public void swordsmanBackstory() { // implemented through revision
+        System.out.println();
+        System.out.println("┌───────────────────────────────────────────────────────────────────────────────┐");
+        System.out.println("│                                  Backstory                                    │");
+        System.out.println("├───────────────────────────────────────────────────────────────────────────────┤");
+        System.out.println("│ Kael Solmere was born into a family burdened with a dark legacy. The Solmeres │");
+        System.out.println("│ were once the guardians of the Kim Morvain, a forbidden artifact of immense   │");
+        System.out.println("│ power. Centuries ago, a treacherous betrayal shattered the family, scattering │");
+        System.out.println("│ its members and leaving a lingering curse upon their bloodline.               │");
+        System.out.println("│                                                                               │");
+        System.out.println("│ Now, Kael and his sister Aria are the last heirs. Their path is not only about│");
+        System.out.println("│ mastering their extraordinary abilities but also unraveling the secrets       │");
+        System.out.println("│ haunting their family. Bound by loyalty and shared struggle, the siblings     │");
+        System.out.println("│ rely on each other to survive trials, uncover hidden truths, and confront the │");
+        System.out.println("│ forces behind the Kim Morvain. Every step they take brings them closer to     │");
+        System.out.println("│ breaking the curse—if they can withstand the shadows of their bloodline.      │");
+        System.out.println("└───────────────────────────────────────────────────────────────────────────────┘");
+        System.out.println("┌──────────────────────────────┐");
+        System.out.println("│   Press ENTER to continue    │");
+        System.out.println("└──────────────────────────────┘");
+        scanner.nextLine();
+        System.out.println();
+
+    }
+
+    public static void choiceSwordsman(){ // removed and not implemented
         System.out.println("┌────────────────────┐(_ _)");
         System.out.println("│  Player Character  │  \\/)");
         System.out.println("└────────────────────┘___||");
@@ -282,8 +361,84 @@ public class Narration{
 
 
 }
+
+    public void gunnerDetails() { // implemented through revision
+        System.out.println();
+        System.out.println("┌────────────────────┐");
+        System.out.println("│  Player Character  │");
+        System.out.println("└────────────────────┘");
+        System.out.println("┌────────────────────────────────────────────────────────────────────────────────┐");
+        System.out.println("│                          Aria Caelith (Mother's Surname)                       │");
+        System.out.println("├────────────────────────────────────────────────────────────────────────────────┤");
+        System.out.println("│ Age: 15                                                                        │");
+        System.out.println("│ Personality: Quick-Witted, Resourceful, Fiercely Protective of Kael            │");
+        System.out.println("│ Grade Level: First Year Student                                                │");
+        System.out.println("│ Fun Facts:                                                                     │");
+        System.out.println("│   - Siblings with Kael Solmere                                                 │");
+        System.out.println("│   - Skilled gunner and inventor                                                │");
+        System.out.println("│   - Always carries a small notebook for invention ideas                        │");
+        System.out.println("│   - Loves collecting rare crystals and gemstones                               │");
+        System.out.println("│   - Has a habit of whistling when nervous                                      │");
+        System.out.println("│   - Can memorize complex mechanisms after seeing them once                     │");
+        System.out.println("│   - Prefers fast-paced games over slow strategy games                          │");
+        System.out.println("└────────────────────────────────────────────────────────────────────────────────┘");
+        System.out.println("┌──────────────────────────────┐");
+        System.out.println("│   Press ENTER to continue    │");
+        System.out.println("└──────────────────────────────┘");
+        scanner.nextLine();
+        System.out.println();
+
+    }
+
+    public void gunnerStats() { // implemented through revision
+        System.out.println();
+        System.out.println("┌───────────────────────────────────────────┐");
+        System.out.println("│       Aria Caelith - The Void's Eye       │");
+        System.out.println("│       Sharpshooter's Combat Overview      │");
+        System.out.println("│-------------------------------------------│");
+        System.out.println("│  Gunner (MAX LVL: 60)                     │");
+        System.out.println("│  Basic Attack                             │");
+        System.out.println("│  Skill 1 - Flurry Shots                   │");
+        System.out.println("│  Skill 2 - Frostwind Bullet               │");
+        System.out.println("│  Ultimate - Judgement Phantom             │");
+        System.out.println("│                                           │");
+        System.out.println("│  HP (Health Points): 4000                 │");
+        System.out.println("│  MP (Mana Points):    600                 │");
+        System.out.println("│  ATK (Attack):        450                 │");
+        System.out.println("│  DEF (Defence):       300                 │");
+        System.out.println("│  SPD (Speed):         200                 │");
+        System.out.println("└───────────────────────────────────────────┘");
+
+        System.out.println("┌──────────────────────────────┐");
+        System.out.println("│   Press ENTER to continue    │");
+        System.out.println("└──────────────────────────────┘");
+        scanner.nextLine();
+        System.out.println();
+
+    }
+
+    public void gunnerBackstory() { // implemented through revision
+        System.out.println();
+        System.out.println("┌────────────────────────────────────────────────────────────────────────────────────────────┐");
+        System.out.println("│                                        Backstory                                           │");
+        System.out.println("├────────────────────────────────────────────────────────────────────────────────────────────┤");
+        System.out.println("│ Aria Caelith shares the burden of her family\'s cursed legacy alongside her brother Kael.   │");
+        System.out.println("│ As the last heirs of the Solmere lineage, the siblings train tirelessly to master their    │");
+        System.out.println("│ skills and uncover the secrets of the forbidden artifact known as the Kim Morvain.         │");
+        System.out.println("│ Fiercely loyal to each other, Aria uses her quick wit and resourcefulness to protect Kael  │");
+        System.out.println("│ and navigate the dangerous path left by centuries of betrayal. Together, they strive to    │");
+        System.out.println("│ break the curse, restore their family\'s honor, and bring justice to those who threaten     │");
+        System.out.println("│ the legacy of the Kim Morvain.                                                             │");
+        System.out.println("└────────────────────────────────────────────────────────────────────────────────────────────┘");
+        System.out.println("┌──────────────────────────────┐");
+        System.out.println("│   Press ENTER to continue    │");
+        System.out.println("└──────────────────────────────┘");
+        scanner.nextLine();
+        System.out.println();
+
+    }
     
-    public static void choiceGunner() {
+    public static void choiceGunner() { // removed and not implemented
         System.out.println();
         System.out.println("┌────────────────────┐");
         System.out.println("│  Player Character  │");
@@ -331,8 +486,87 @@ public class Narration{
         System.out.println("└────────────────────────────────────────────────────────────────────────────────────────────┘");
 
 }
+
+    public void mageDetails() { // implemented through revision
+        System.out.println();
+        System.out.println("┌────────────────────┐");
+        System.out.println("│  Player Character  │");
+        System.out.println("└────────────────────┘");
+        System.out.println("┌───────────────────────────────────────────────────────────────────────────────┐");
+        System.out.println("│                                  Selene Arclight                              │");
+        System.out.println("├───────────────────────────────────────────────────────────────────────────────┤");
+        System.out.println("│ Age: 15                                                                       │");
+        System.out.println("│ Personality: Prideful                                                         │");
+        System.out.println("│ Grade Level: First Year Student                                               │");
+        System.out.println("│ Fun Facts:                                                                    │");
+        System.out.println("│   - Always practices spells under moonlight                                   │");
+        System.out.println("│   - Can memorize complex incantations after hearing them once                 │");
+        System.out.println("│   - Has a secret love for herbal teas                                         │");
+        System.out.println("│   - Often talks to magical familiars when thinking                            │");
+        System.out.println("│   - Collects rare magical crystals                                            │");
+        System.out.println("└───────────────────────────────────────────────────────────────────────────────┘");
+        System.out.println("┌──────────────────────────────┐");
+        System.out.println("│   Press ENTER to continue    │");
+        System.out.println("└──────────────────────────────┘");
+        scanner.nextLine();
+
+    }
+
+    public void mageStats() { // implemented through revision
+        System.out.println();
+        System.out.println("┌───────────────────────────────────────────┐");
+        System.out.println("│ Selene Arclight - Weaver of Arcane Flames │");
+        System.out.println("│        Mage's Combat Overview             │");
+        System.out.println("│-------------------------------------------│");
+        System.out.println("│  Mage (MAX LVL: 60)                       │");
+        System.out.println("│  Basic Attack                             │");
+        System.out.println("│  Skill 1 - Stellar Shard                  │");
+        System.out.println("│  Skill 2 - Chains of Starlight            │");
+        System.out.println("│  Ultimate - Astral Cataclysm              │");
+        System.out.println("│                                           │");
+        System.out.println("│  HP (Health Points): 4000                 │");
+        System.out.println("│  MP (Mana Points):   1000                 │");
+        System.out.println("│  ATK (Attack):        550                 │");
+        System.out.println("│  DEF (Defence):       180                 │");
+        System.out.println("│  SPD (Speed):         200                 │");
+        System.out.println("└───────────────────────────────────────────┘");
+        System.out.println("┌──────────────────────────────┐");
+        System.out.println("│   Press ENTER to continue    │");
+        System.out.println("└──────────────────────────────┘");
+        scanner.nextLine();
+        System.out.println();
+
+    }
+
+    public void mageBackstory() { // implemented through revision 
+        System.out.println();
+        System.out.println("┌────────────────────────────────────────────────────────────────────────────────┐");
+        System.out.println("│                                  Backstory                                     │");
+        System.out.println("├────────────────────────────────────────────────────────────────────────────────┤");
+        System.out.println("│ Born into the prestigious Arclight family, Selene was destined to inherit her  │");
+        System.out.println("│ family's mantle as the head of the lineage. A prodigy in the arcane arts, her  │");
+        System.out.println("│ every day was filled with rigorous training, mastering spells that could bend  │");
+        System.out.println("│ starlight and summon cosmic energies.                                          │");
+        System.out.println("│                                                                                │");
+        System.out.println("│ Everything changed when her father introduced a boy claiming to be her brother,│");
+        System.out.println("│ a contender for the very inheritance Selene was meant to claim. Pride and      │");
+        System.out.println("│ ambition ignited, fueling her determination to surpass him in every way.       │");
+        System.out.println("│                                                                                │");
+        System.out.println("│ To prove her worth, Selene enrolled in the academy, immersing herself in every │");
+        System.out.println("│ spell, ritual, and fragment of forbidden knowledge it offered. Her goal: to    │");
+        System.out.println("│ achieve feats so extraordinary that even her father cannot deny her as the true│");
+        System.out.println("│ heir. Along the way, confronting the mysterious Kim Morvain may cement her     │");
+        System.out.println("│ legacy.                                                                        │");
+        System.out.println("└────────────────────────────────────────────────────────────────────────────────┘");
+        System.out.println("┌──────────────────────────────┐");
+        System.out.println("│   Press ENTER to continue    │");
+        System.out.println("└──────────────────────────────┘");
+        scanner.nextLine();
+
+        System.out.println();
+    }
     
-    public static void choiceMage() {
+    public static void choiceMage() { // removed and not implemented
         System.out.println();
         System.out.println("┌────────────────────┐");
         System.out.println("│  Player Character  │");
@@ -437,6 +671,4 @@ public class Narration{
             }
         }
     }
-
 }
-
