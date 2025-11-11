@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class CharacterMenu extends Narration{
     Scanner scanner = new Scanner(System.in);
 
-    public void chooseCharacterMenu(){
+    public Hero chooseCharacterMenu(){
         MenuRelated designRelatedMenu = new MenuRelated();
         Characters characterPrompts = new Characters();
         Menu mainMenuHandler = new Menu();

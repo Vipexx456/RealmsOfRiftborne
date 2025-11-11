@@ -54,28 +54,45 @@ public class ForestOfReverie {
     }
 
     public void exploreEntry(Hero hero) {
-        while(true){
-            System.out.print("\nDo you want to explore the Forest of Reverie? (y/n): ");
-            char choice = scan.next().toLowerCase().charAt(0);
-            System.out.println();
+        char choice;
 
-            if (choice == 'y') {
-                System.out.println("Exploring the mystical Forest of Reverie...");
-                retreat = false;
-                explore = true;
-                currentArea = 1;  // explore outside area
-                break;
-            } else if (choice == 'n'){
-                System.out.println("You chose not to explore the Forest of Reverie.");
-                exit();
-                exit = true;
-                break;
-            } else {
-                System.out.println("Invalid choice. Please enter 'y' or 'n'.");
+        while (true) {
+            try {
+                System.out.print("\nDo you want to explore the Forest of Reverie? (y/n): ");
+                String input = scan.next().trim().toLowerCase();
+
+                if (input.isEmpty()) {
+                    System.out.println("No input detected. Please enter 'y' or 'n'.");
+                    continue;
+                }
+
+                choice = input.charAt(0);
                 System.out.println();
+
+                if (choice == 'y') {
+                    System.out.println("Exploring the mystical Forest of Reverie...");
+                    retreat = false;
+                    explore = true;
+                    currentArea = 1;  // explore outside
+                    break;
+
+                } else if (choice == 'n') {
+                    System.out.println("You chose not to explore the Forest of Reverie.");
+                    exit();
+                    exit = true;
+                    break;
+
+                } else {
+                    System.out.println("Invalid choice. Please enter 'y' or 'n'.");
+                }
+
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please try again.");
+                scan.nextLine(); // clears broken input
             }
         }
     }
+
 
     public void exploreOutsideArea(Hero hero) {
         // This is my current currentArea = 1 
@@ -128,26 +145,41 @@ public class ForestOfReverie {
             }
         }
 
-        System.out.println();
-
         while(true){
-            System.out.print("Do you want to continue exploring? (y/n): ");
-            char choice = scan.next().toLowerCase().charAt(0);
+            char choice;
 
-            if (choice == 'y') {
-                explore = true;
-                retreat = false;
-                currentArea = 2; // explore middle area
-                break;
-            } else if (choice == 'n'){
-                System.out.println("\nYou chose to head back towards the academy entrance.");
-                retreat = true;
-                explore = false;
-                currentArea = 0; // go back to explore entry
-                break;
-            } else {
-                System.out.println("Invalid choice. Please enter 'y' or 'n'.");
+            try {
+                System.out.print("\nDo you want to continue exploring? (y/n): ");
+                String input = scan.next().trim().toLowerCase();
+                
+                if (input.isEmpty()) {
+                    System.out.println("No input detected. Please enter 'y' or 'n'.");
+                    continue;
+                }
+
+                choice = input.charAt(0);
                 System.out.println();
+
+                if (choice == 'y') {
+                    explore = true;
+                    retreat = false;
+                    currentArea = 2; // explore middle area
+                    break;
+
+                } else if (choice == 'n'){
+                    System.out.println("\nYou chose to head back towards the academy entrance.");
+                    retreat = true;
+                    explore = false;
+                    currentArea = 0; // go back to explore entry
+                    break;
+
+                } else {
+                    System.out.println("Invalid choice. Please enter 'y' or 'n'.");
+                }
+
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please try again.");
+                scan.nextLine(); // clears broken input
             }
         }
     }
@@ -203,26 +235,41 @@ public class ForestOfReverie {
             }
         }
 
-        System.out.println();
-
         while(true){
-            System.out.print("Do you want to continue exploring? (y/n): ");
-            char choice = scan.next().toLowerCase().charAt(0);
+            char choice;
 
-            if (choice == 'y') {
-                explore = true;
-                retreat = false;
-                currentArea = 3; // explore inner area
-                break;
-            } else if (choice == 'n'){
-                System.out.println("\nYou chose to head back to the previous area.");
-                retreat = true;
-                explore = false;
-                currentArea = 1; // go back to outside area
-                break;
-            } else {
-                System.out.println("Invalid choice. Please enter 'y' or 'n'.");
+            try {
+                System.out.print("\nDo you want to continue exploring? (y/n): ");
+                String input = scan.next().trim().toLowerCase();
+
+                if (input.isEmpty()) {
+                    System.out.println("No input detected. Please enter 'y' or 'n'.");
+                    continue;
+                }
+
+                choice = input.charAt(0);
                 System.out.println();
+
+                if (choice == 'y') {
+                    explore = true;
+                    retreat = false;
+                    currentArea = 3; // explore inner area
+                    break;
+
+                } else if (choice == 'n'){
+                    System.out.println("\nYou chose to head back to the previous area.");
+                    retreat = true;
+                    explore = false;
+                    currentArea = 1; // go back to outside area
+                    break;
+
+                } else {
+                    System.out.println("Invalid choice. Please enter 'y' or 'n'.");
+                }
+
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please try again.");
+                scan.nextLine(); // clears broken input
             }
         }
     }
@@ -265,63 +312,79 @@ public class ForestOfReverie {
         System.out.println("┌─────────────────────────────────────────────────┐");
         System.out.println("│      It's the Forest Guardian, Elderthorn!      │");
         System.out.println("└─────────────────────────────────────────────────┘");
-        System.out.println();
 
         while(true){
-            System.out.print("Do you want to fight the Forest Guardian, Elderthorn? (y/n): ");
-            char choice = scan.next().toLowerCase().charAt(0);
+            char choice;
 
-            if (choice == 'y') {
-                explore = true;
-                retreat = false;
-                boolean heroWon = battle.fight(hero, new Elderthorn());
-                if(BattleMechanic.run) {
-                    BattleMechanic.run = false;
-                } else if (heroWon) {
+            try {    
+                System.out.print("\nDo you want to fight the Forest Guardian, Elderthorn? (y/n): ");
+                String input = scan.next().trim().toLowerCase();
 
-                    goldGained = (int) Math.round(2500 * rand.nextDouble(1.50, 1.60)); // random multiplier 1.50 - 1.59
-                    expGained = (int) Math.round(450 * rand.nextDouble(1.20, 1.30)); // random multiplier 1.20 - 1.29
-                    //temp design for drop
-                    System.out.println("┌────────────────────────────────────────────────┐");
-                    System.out.println("│                CONGRATULATIONS!!!              │");
-                    System.out.println("│                                                │");
-                    System.out.println("│                                                │");
-                    System.out.println("│    You have obtained:                          │");
-                    System.out.println("│                                                │");
-                    System.out.println("│               Gold: " + df.format(goldGained) + "                      │");
-                    System.out.println("│               Exp : " + df.format(expGained) + "                        │");
-                    System.out.println("│                                                │");
-                    System.out.println("│                                                │");
-                    System.out.println("└────────────────────────────────────────────────┘");
-                    hero.levelUp(expGained);
-                    System.out.println("You have slain the enemy that guards the forest, every living being within the forest now fears you.");
-                    System.out.println();
-
-                    if(hero.getMageCharacterChosen() && hero.getHaveDefeatedArea1Boss()) { // Javines | Plot
-                        magePlotHandler.mageAfterArea1();
-                    }
-
-                    System.out.println("You peacefully exit the Forest Of Reverie...");
-                    System.out.println();
-
-                    currentArea = 0; // automatically exits the FOREST OF REVERIE
-                    exit = true;
-                    break;
-                } else {
-                    System.out.println("You have sustained serious injuries, but fortunately, a group of students arrived in time to rescue you.");
-                    currentArea = 0; // automatically exits the FOREST OF REVERIE
-                    exit = true;
-                    break;
+                if (input.isEmpty()) {
+                    System.out.println("No input detected. Please enter 'y' or 'n'.");
+                    continue;
                 }
-            } else if (choice == 'n'){
-                System.out.println("\nYou chose to avoid the Forest Guardian, Elderthorn and head back to the previous area.");
-                retreat = true;
-                explore = false;
-                currentArea = 2; // go back to middle area
-                break;
-            } else {
-                System.out.println("Invalid choice. Please enter 'y' or 'n'.");
+
+                choice = input.charAt(0);
                 System.out.println();
+
+                if (choice == 'y') {
+                    explore = true;
+                    retreat = false;
+                    boolean heroWon = battle.fight(hero, new Elderthorn());
+                    if(BattleMechanic.run) {
+                        BattleMechanic.run = false;
+                    } else if (heroWon) {
+
+                        goldGained = (int) Math.round(2500 * rand.nextDouble(1.50, 1.60)); // random multiplier 1.50 - 1.59
+                        expGained = (int) Math.round(450 * rand.nextDouble(1.20, 1.30)); // random multiplier 1.20 - 1.29
+                        //temp design for drop
+                        System.out.println("┌────────────────────────────────────────────────┐");
+                        System.out.println("│                CONGRATULATIONS!!!              │");
+                        System.out.println("│                                                │");
+                        System.out.println("│                                                │");
+                        System.out.println("│    You have obtained:                          │");
+                        System.out.println("│                                                │");
+                        System.out.println("│               Gold: " + df.format(goldGained) + "                      │");
+                        System.out.println("│               Exp : " + df.format(expGained) + "                        │");
+                        System.out.println("│                                                │");
+                        System.out.println("│                                                │");
+                        System.out.println("└────────────────────────────────────────────────┘");
+                        hero.levelUp(expGained);
+                        System.out.println("You have slain the enemy that guards the forest, every living being within the forest now fears you.");
+                        System.out.println();
+
+                        if(hero.getMageCharacterChosen() && hero.getHaveDefeatedArea1Boss()) { // Javines | Plot
+                            magePlotHandler.mageAfterArea1();
+                        }
+
+                        System.out.println("You peacefully exit the Forest Of Reverie...");
+                        System.out.println();
+
+                        currentArea = 0; // automatically exits the FOREST OF REVERIE
+                        exit = true;
+                        break;
+
+                    } else {
+                        System.out.println("You have sustained serious injuries, but fortunately, a group of students arrived in time to rescue you.");
+                        currentArea = 0; // automatically exits the FOREST OF REVERIE
+                        exit = true;
+                        break;
+
+                    }
+                } else if (choice == 'n'){
+                    System.out.println("\nYou chose to avoid the Forest Guardian, Elderthorn and head back to the previous area.");
+                    retreat = true;
+                    explore = false;
+                    currentArea = 2; // go back to middle area
+                    break;
+
+                } else {
+                    System.out.println("Invalid choice. Please enter 'y' or 'n'.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please try again.");
+                scan.nextLine(); // clears broken input
             }
         }
     }
