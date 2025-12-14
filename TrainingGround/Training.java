@@ -204,7 +204,7 @@ public class Training {
 
                                 session.reset(); 
 
-                                loadHandler.resetGame();
+                                //loadHandler.resetGame();
 
                                 if (hero.getNumberOfTrainingFinished() < 4) {
                                     hero.setFinishedAllTraining(false);
