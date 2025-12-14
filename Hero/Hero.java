@@ -881,6 +881,19 @@ public class Hero {
         return hasConversedWithShop;
     }
 
+    // added while ga debug
+
+    private boolean currentlyTraining;
+
+    public boolean isCurrentlyTraining() {
+        return currentlyTraining;
+    }
+
+    public void setCurrentlyTraining(boolean currentlyTraining) {
+        this.currentlyTraining = currentlyTraining;
+    }
+
+
     // Stats Check Related ___________________________________________________________________________________________________________________
 
     private boolean swordmanCharacterChosen = false;
