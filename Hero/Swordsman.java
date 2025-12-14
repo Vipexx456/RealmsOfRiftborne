@@ -15,6 +15,7 @@ public class Swordsman extends Hero {
         this.skillCd1 = 5;
         this.skillCd2 = 8;
         this.skillCdU = 10;
+        // levelUp(101); // test purpose
 
         setSwordmanCharacterChosen(true); // Javines | plot
     }
