@@ -138,20 +138,22 @@ public class Training {
                 System.out.println("│  Press ENTER to claim rewards...  │");
                 System.out.println("└───────────────────────────────────┘");
                 scanner.nextLine();
-
                 System.out.println();
                 System.out.println();
                 System.out.println();
                 System.out.println();
                 System.out.println();
-                statProgressHandler.currencyProgress(hero);
-                scanner.nextLine();
 
                 if(hero.getNumberOfTrainingFinished() == 4){
-                    hero.addBonusHp(session.bonusHp);
-                    hero.addBonusAtk(session.bonusAtk);
-                    hero.addBonusDef(session.bonusDef);
-                    hero.addBonusMana(session.bonusMana);
+                    // hero.addBonusHp(session.bonusHp);
+                    // hero.addBonusAtk(session.bonusAtk);
+                    // hero.addBonusDef(session.bonusDef);
+                    // hero.addBonusMana(session.bonusMana);
+                    statProgressHandler.endurance(hero);
+                    statProgressHandler.strength(hero);
+                    statProgressHandler.durability(hero);
+                    statProgressHandler.mana(hero);
+                    statProgressHandler.currencyProgress(hero);
                     hero.setFinishedAllTraining(true);
                 }
 
@@ -323,22 +325,22 @@ public class Training {
             switch(trainingType.toLowerCase()) {
                 case "endurance":
                     hero.setFinishedEndurance(true);
-                    session.bonusHp += (int)(200 * random.nextDouble(1.2, 1.5));
+                    //session.bonusHp += (int)(200 * random.nextDouble(1.2, 1.5));
                     break;
 
                 case "strength":
                     hero.setFinishedStrength(true);
-                    session.bonusAtk += (int)(100 * random.nextDouble(1.2, 1.5));
+                    //session.bonusAtk += (int)(100 * random.nextDouble(1.2, 1.5));
                     break;
 
                 case "durability":
                     hero.setFinishedDurability(true);
-                    session.bonusDef += (int)(50 * random.nextDouble(1.2, 1.5));
+                    //session.bonusDef += (int)(50 * random.nextDouble(1.2, 1.5));
                     break;
 
                 case "mana refinement":
                     hero.setFinishedManaRefinement(true);
-                    session.bonusMana += (int)(150 * random.nextDouble(1.2, 1.5));
+                    //session.bonusMana += (int)(150 * random.nextDouble(1.2, 1.5));
                     break;
 
             }

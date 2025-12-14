@@ -4,10 +4,13 @@ import Hero.*;
 import Narration.*;
 
 import java.util.Scanner;
+import java.text.DecimalFormat;
 
 public class Characters {
 
     Narration printdelayHandler = new Narration();
+
+    DecimalFormat df = new DecimalFormat("#,##0");
 
     static Scanner scanner = new Scanner(System.in);
     
@@ -185,13 +188,13 @@ public class Characters {
             " .      *   ┌────────────────────────────────────────────────────┐",
             "      .     |   Player Character: Kael Solmere - Current Stats   |",
             " *          └────────────────────────────────────────────────────┘",
-            "░░░░░░░░░░░░> Character Level:   .    " + hero.getLevel() + " .   *   .  .   *  ",
-            "░░░███▓▓▓▓▓▓░░░> Current Experience:  " + hero.getExperience() + " .   *    .   *   ",
-            "░░░▓▓▓███▓▓▓▓▓▓░░░  *     .         > Health:   " + hero.getHp() + " .    . ",
-            "░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░          *    > Attack:   " + hero.getAttack() + ".    .   * ",
-            "  ░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░    .     .  > Mana:     " + hero.getMana() + " *   .   .   *",
-            "     ░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░          > Defense:  " + hero.getDefense() + " .   *  .  *",
-            "  .     ░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░   *   > Speed:    " + hero.getSpeed(),
+            "░░░░░░░░░░░░> Character Level:   .    " + df.format(hero.getLevel()) + " .   *   .  .   *  ",
+            "░░░███▓▓▓▓▓▓░░░> Current Experience:  " + df.format(hero.getExperience()) + " .   *    .   *   ",
+            "░░░▓▓▓███▓▓▓▓▓▓░░░  *     .         > Health:   " + df.format(hero.getHp()) + " .    . ",
+            "░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░          *    > Attack:   " + df.format(hero.getAttack()) + ".    .   * ",
+            "  ░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░    .     .  > Mana:     " + df.format(hero.getMana()) + " *   .   .   *",
+            "     ░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░          > Defense:  " + df.format(hero.getDefense()) + " .   *  .  *",
+            "  .     ░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░   *   > Speed:    " + df.format(hero.getSpeed()),
             "   *        ░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░         ░░░░░░  .          .    ",
             "               ░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░   ░░░███░░░   ",
             "      .           ░░░▓▓▓▓▓▓███▓▓▓▓▓▓░░░▓▓▓░░░                     ",
@@ -225,13 +228,13 @@ public class Characters {
             "|   Player Character: Aria Caelith - Current Stats   |   .",
             "└────────────────────────────────────────────────────┘    ",
             "  *    .       *        .             .        . ",
-            "  * > Character Level:     " + hero.getLevel() + "   .       *     ",
-            "  * > Current Experience:  " + hero.getExperience() + "   .      *   ",
-            "       > Health:   " + hero.getHp() + "        .     *    .  ",
-            "   .   > Attack:   " + hero.getAttack() + ".    .  .  *    .    *  ",
-            "       > Mana:     " + hero.getMana() + " .      * .     .     *   .",
-            "   .   > Defense:  " + hero.getDefense() + " .   .      .   .    *",
-            "       > Speed:    " + hero.getSpeed() + "*        .        .       . ",
+            "  * > Character Level:     " + df.format(hero.getLevel()) + "   .       *     ",
+            "  * > Current Experience:  " + df.format(hero.getExperience()) + "   .      *   ",
+            "       > Health:   " + df.format(hero.getHp()) + "        .     *    .  ",
+            "   .   > Attack:   " + df.format(hero.getAttack()) + ".    .  .  *    .    *  ",
+            "       > Mana:     " + df.format(hero.getMana()) + " .      * .     .     *   .",
+            "   .   > Defense:  " + df.format(hero.getDefense()) + " .   .      .   .    *",
+            "       > Speed:    " + df.format(hero.getSpeed()) + "*        .        .       . ",
             "                                             ░░░",
             "      ██████░░░░░░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░",
             "   ░░████▓▓▓██████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░",
@@ -264,25 +267,25 @@ public class Characters {
             "      ░░░░█    └────────────────────────────────────────────────────┘",
             " *  ░░░░░░▓           *           .          .               .          ",
             "  ░░░░░░░░░░░                                     .                  ",
-            "░░░░▓            > Character Level:     " + hero.getLevel() + "   .       *        .    ",
+            "░░░░▓            > Character Level:     " + df.format(hero.getLevel()) + "   .       *        .    ",
             "░░░▓▓  ▓█      *           .            *                  .           ",
             "░░░░▓▓▓▓▓▓█  .                    .                                    ",
-            "░░░░▓  ▓█        > Current Experience:  " + hero.getExperience() + "   .       *        .   ",
+            "░░░░▓  ▓█        > Current Experience:  " + df.format(hero.getExperience()) + "   .       *        .   ",
             "░░▓░░         .                      *     .      *                  ",
             "  ░░░░█  .        *   .                                         .      ",
-            "    ░░░░█          > Health:   " + hero.getHp() + "             *        .   ",
+            "    ░░░░█          > Health:   " + df.format(hero.getHp()) + "             *        .   ",
             "      ░░░░█           .                                    .           ",
             "      ░░░░█     .              *     .                                 ",
-            "   .    ░░█        > Attack:   " + hero.getAttack() + "                   .  ",
+            "   .    ░░█        > Attack:   " + df.format(hero.getAttack()) + "                   .  ",
             "        ░░░         *                                    .            ",
             "         ░░░                       .           *                    ",
-            "  *      ░░░       > Mana:     " + hero.getMana() + "            *            ",
+            "  *      ░░░       > Mana:     " + df.format(hero.getMana()) + "            *            ",
             "         ░▓░                        .           *                    ",
             "    .     ░░      .                                      .        .   ",
-            "          ░░       > Defense:  " + hero.getDefense() + "            .    *   ",
+            "          ░░       > Defense:  " + df.format(hero.getDefense()) + "            .    *   ",
             "          ░░                  .                                 *    ",
             "  *       ░░░                               .         .              ",
-            "      .   ░▓░      > Speed:    " + hero.getSpeed() + "                   *  ",
+            "      .   ░▓░      > Speed:    " + df.format(hero.getSpeed()) + "                   *  ",
             "           ▓░           *                   *                     .  ",
             "┌──────────────────────────────┐",
             "│   Press ENTER to continue    │",
