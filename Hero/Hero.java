@@ -994,6 +994,9 @@ public class Hero {
     this.haveDefeatedArea1Boss = false;
     this.haveDefeatedArea2Boss = false;
     this.haveDefeatedArea3Boss = false;
+    this.unlockedArea1 = false;
+    this.unlockedArea2 = false;
+    this.unlockedArea3 = false;
 
     // Reset training progress
     this.finishedEndurance = false;
