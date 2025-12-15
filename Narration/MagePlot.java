@@ -137,20 +137,46 @@ public class MagePlot {
         promptSeparatorHandler.promptSeparatorResized();
         mageAfterArea3();
 
-        System.out.println("┌─────────────────────────────────────────────────┐");
-        System.out.println("│      A life-binding choice awaits you...        │");
-        System.out.println("│  Will you offer your soul to sever the  curse?  │");
-        System.out.println("│                      (y/n)                      │");
-        System.out.println("└─────────────────────────────────────────────────┘");
-        System.out.println("-->| ");
-        String choice = scanner.nextLine();
+        String choice;
 
-        if(choice.equalsIgnoreCase("y")) {
-            promptSeparatorHandler.promptSeparatorResized();
-            mageSacrifice();
-        } else {
-            promptSeparatorHandler.promptSeparatorResized();
-            mageLoop();
+        while(true) {
+
+            System.out.println("┌─────────────────────────────────────────────────┐");
+            System.out.println("│      A life-binding choice awaits you...        │");
+            System.out.println("│  Will you offer your soul to sever the  curse?  │");
+            System.out.println("│                      (y/n)                      │");
+            System.out.println("└─────────────────────────────────────────────────┘");
+            System.out.print("-->| ");
+
+            try {
+                choice = scanner.nextLine();
+
+                if(choice.equalsIgnoreCase("y")) {
+                    promptSeparatorHandler.promptSeparatorResized();
+                    mageSacrifice();
+                } else if (choice.equalsIgnoreCase("n")) {
+                    promptSeparatorHandler.promptSeparatorResized();
+                    mageLoop();
+                } else {
+                    System.out.println();
+                    System.out.println("┌────────────────────────────────────────┐");
+                    System.out.println("│   Choice unclear! Enter 'y' or 'n'.    │");
+                    System.out.println("└────────────────────────────────────────┘");
+                    promptSeparatorHandler.promptSeparatorResized();
+                }
+
+            } catch(Exception e) {
+
+                System.out.println();
+                System.out.println("┌──────────────────────────────────────────────┐");
+                System.out.println("│   An unexpected error occurred. Try again.   │");
+                System.out.println("└──────────────────────────────────────────────┘");
+                promptSeparatorHandler.promptSeparatorResized();
+                scanner.nextLine();
+
+            }
+
+            
         }
 
     }

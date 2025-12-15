@@ -106,21 +106,46 @@ public class SwordsmanPlot {
         promptSeparatorHandler.promptSeparatorResized();
         swordsmanAfterArea3();
 
-        System.out.println("┌────────────────────────────────────────────────┐");
-        System.out.println("│  The chamber trembles with ancestral whispers  │");
-        System.out.println("│     Will you offer your life to break the      │");
-        System.out.println("│                     (y/n)                      │");
-        System.out.println("└────────────────────────────────────────────────┘");
+        String choice;
 
-        System.out.print("-->|");
-        String choice = scanner.nextLine();
+        while(true) {
 
-        if(choice.equalsIgnoreCase("y")) {
-            promptSeparatorHandler.promptSeparatorResized();
-            swordsmanSacrifice();
-        } else {
-            promptSeparatorHandler.promptSeparatorResized();
-            swordsmanLoop();
+            System.out.println("┌────────────────────────────────────────────────┐");
+            System.out.println("│  The chamber trembles with ancestral whispers  │");
+            System.out.println("│     Will you offer your life to break the      │");
+            System.out.println("│                     (y/n)                      │");
+            System.out.println("└────────────────────────────────────────────────┘");
+            System.out.print("-->|");
+
+            try {
+                choice = scanner.nextLine();
+
+                if(choice.equalsIgnoreCase("y")) {
+                    promptSeparatorHandler.promptSeparatorResized();
+                    swordsmanSacrifice();
+                } else if (choice.equalsIgnoreCase("n")){
+                    promptSeparatorHandler.promptSeparatorResized();
+                    swordsmanLoop();
+                } else  {
+                    System.out.println();
+                    System.out.println("┌────────────────────────────────────────┐");
+                    System.out.println("│   Choice unclear! Enter 'y' or 'n'.    │");
+                    System.out.println("└────────────────────────────────────────┘");
+                    promptSeparatorHandler.promptSeparatorResized();
+                }
+
+            } catch(Exception e) {
+
+                System.out.println();
+                System.out.println("┌──────────────────────────────────────────────┐");
+                System.out.println("│   An unexpected error occurred. Try again.   │");
+                System.out.println("└──────────────────────────────────────────────┘");
+                promptSeparatorHandler.promptSeparatorResized();
+                scanner.nextLine();
+
+            }
+
+            
         }
 
     }
