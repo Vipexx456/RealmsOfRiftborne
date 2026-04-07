@@ -7,13 +7,12 @@ import com.ror.models.Boss.*;
 import com.ror.models.Mobs.*;
 import com.ror.models.Entity;
 
-import java.awt.GraphicsEnvironment;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.plaf.FontUIResource;
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.*;
@@ -23,7 +22,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GameWindow {
+public class GameWindow implements BattlePanel.BattleActionListener {
 
     // Directory ug string assignments for loading assets and managing card layout
     // screens. If you add new screens or asset folders, add new constants here to
@@ -69,16 +68,30 @@ public class GameWindow {
 
     // Theme colors who the hell reads RGBA colors, gamit sa uban functions like
     // panels
-    private static final Color COLOR_BACKGROUND = Color.decode("#00072D");
-    private static final Color COLOR_PANEL = Color.decode("#00072D");
-    private static final Color COLOR_TEXT_DARK = Color.WHITE;
-    private static final Color COLOR_TEXT_MUTED = Color.WHITE;
-    private static final Color COLOR_BORDER = Color.decode("#4D5B9E");
+    private static final Color COLOR_BACKGROUND = new Color(227, 221, 212); // warm stone background
+    private static final Color COLOR_PANEL = new Color(239, 235, 228); // parchment panel fill
+    private static final Color COLOR_BATTLE_PANEL = new Color(128, 99, 84);
+    private static final Color COLOR_BATTLE_SURFACE = new Color(147, 119, 99);
+    private static final Color COLOR_BATTLE_BG = new Color(71, 54, 44);
+    private static final Color COLOR_BATTLE_PLACEHOLDER = new Color(125, 100, 88);
+    private static final Color COLOR_BATTLE_BORDER = new Color(109, 88, 70);
+    private static final Color COLOR_TEXT_DARK = new Color(46, 31, 20); // deep umber text
+    private static final Color COLOR_TEXT_MUTED = new Color(106, 79, 60); // muted bronze text
+    private static final Color COLOR_BORDER = new Color(145, 114, 91);
     private static final Color COLOR_HERO_HP = new Color(164, 54, 54); // elderberry red (HP bar)
     private static final Color COLOR_HERO_MANA = new Color(52, 92, 156); // deep royal blue (Mana bar)
 
+    private static final Color COLOR_CHARSEL_BACKGROUND = new Color(227, 221, 212); // warm stone background
+    private static final Color COLOR_CHARSEL_PANEL = new Color(239, 235, 228); // parchment panel fill
+    private static final Color COLOR_CHARSEL_TEXT_DARK = new Color(46, 31, 20); // deep umber text
+    private static final Color COLOR_CHARSEL_TEXT_MUTED = new Color(106, 79, 60); // muted bronze text
+
     private final JLabel titleLabel = new JLabel("Mystvale Academy");
     private final JLabel subtitleLabel = new JLabel("GUI RPG");
+    private JPanel headerPanel;
+    private JButton headerExitButton;
+    private JPanel leftPane;
+    private Border defaultLeftPaneBorder;
 
     private final JLabel heroNameValue = new JLabel("-");
     private final JLabel heroClassValue = new JLabel("-");
@@ -127,24 +140,6 @@ public class GameWindow {
     private JButton yesChoiceButton;
     private JButton noChoiceButton;
 
-    private final JLabel battleTitleValue = new JLabel("Battle");
-    private final JLabel battleRoundValue = new JLabel("Round 1");
-    private final JLabel battleHeroNameValue = new JLabel("-");
-    private final JLabel battleEnemyNameValue = new JLabel("-");
-    private final JLabel battleEnemySpriteLabel = new JLabel("No Sprite", SwingConstants.CENTER);
-    private final JProgressBar battleHeroHpBar = new JProgressBar();
-    private final JProgressBar battleHeroManaBar = new JProgressBar();
-    private final JProgressBar battleEnemyHpBar = new JProgressBar();
-    private final JProgressBar battleEnemyManaBar = new JProgressBar();
-    private final JTextArea battleLogArea = new JTextArea();
-    private JButton battleBasicButton;
-    private JButton battleSkill1Button;
-    private JButton battleSkill2Button;
-    private JButton battleUltimateButton;
-    private JButton battlePotionButton;
-    private JButton battleRunButton;
-    private JButton battleBackButton;
-
     private final Object battleActionLock = new Object();
     private volatile Integer pendingBattleAction = null;
 
@@ -153,6 +148,8 @@ public class GameWindow {
     private int currentStoryIndex = 0;
     private boolean inventoryNarrationShown = false;
     private JFrame frame;
+    private AdventurePanel overlay;
+    private BattlePanel battlePanel;
     private BufferedImage landingBackground;
     private final ButtonSkin primaryButtonSkin;
     private final ButtonSkin secondaryButtonSkin;
@@ -170,17 +167,7 @@ public class GameWindow {
             throw new IllegalStateException("Unable to initialize GUI input stream.", exception);
         }
 
-        try {
-            // Change the main screen background here by replacing the file path below
-            // with your own image inside assets/images.
-            // The landing screen uses a regular raster image file, so artwork exported
-            // from Aseprite can be dropped into assets/images and loaded the same way.
-            landingBackground = ImageIO.read(new File("assets/images/landing-background-source.jpg"));
-        } catch (IOException ignored) {
-            // If the image is missing or unreadable, we keep the game running and fall
-            // back to a solid-color title screen instead of crashing on startup.
-            landingBackground = null;
-        }
+        landingBackground = loadLandingBackground();
         // Main screen ra guro
         primaryButtonSkin = loadButtonSkin("button-primary");
         secondaryButtonSkin = loadButtonSkin("button-secondary");
@@ -189,6 +176,7 @@ public class GameWindow {
     public void launchGame() {
         wireConsoleStreams();
         frame = buildFrame();
+        setupBattleBackspaceBinding();
         frame.setVisible(true);
         showLandingScreen();
     }
@@ -200,6 +188,11 @@ public class GameWindow {
         window.setSize(1280, 800);
         window.setResizable(false);
         window.setContentPane(rootPanel);
+
+        overlay = new AdventurePanel(window, getHeadingFont(30f), getBodyFont(16f));
+        window.setGlassPane(overlay);
+
+        battlePanel = new BattlePanel(getHeadingFont(30f), getBodyFont(16f), this);
 
         rootPanel.add(buildLandingScreen(), ROOT_LANDING);
         rootPanel.add(buildGameShell(), ROOT_GAME);
@@ -213,18 +206,32 @@ public class GameWindow {
         JPanel panel = new JPanel(new BorderLayout(18, 18));
         panel.setBackground(COLOR_BACKGROUND);
 
-        JPanel header = buildHeader();
-        JPanel leftPane = buildLeftPane();
+        headerPanel = buildHeader();
+        leftPane = buildLeftPane();
 
         // Header at top, main content (with card layout) center.
-        panel.add(header, BorderLayout.NORTH);
+        panel.add(headerPanel, BorderLayout.NORTH);
         panel.add(leftPane, BorderLayout.CENTER);
         return panel;
     }
 
+    private void setupBattleBackspaceBinding() {
+        if (frame == null) {
+            return;
+        }
+        InputMap inputMap = frame.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = frame.getRootPane().getActionMap();
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "battle.restoreButtons");
+        actionMap.put("battle.restoreButtons", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                battlePanel.tryRestoreBattleButtons();
+            }
+        });
+    }
+
     private JPanel buildHeader() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(18, 22, 0, 22));
         panel.setBackground(COLOR_BACKGROUND);
 
@@ -234,16 +241,53 @@ public class GameWindow {
         subtitleLabel.setFont(getBodyFont(15f));
         subtitleLabel.setForeground(COLOR_TEXT_MUTED);
 
-        panel.add(titleLabel);
-        panel.add(Box.createVerticalStrut(4));
-        panel.add(subtitleLabel);
+        JPanel textBlock = new JPanel();
+        textBlock.setLayout(new BoxLayout(textBlock, BoxLayout.Y_AXIS));
+        textBlock.setOpaque(false);
+        textBlock.add(titleLabel);
+        textBlock.add(Box.createVerticalStrut(4));
+        textBlock.add(subtitleLabel);
+
+        headerExitButton = new JButton("Exit");
+        headerExitButton.setFont(getBodyFont(13f).deriveFont(Font.BOLD, 13f));
+        headerExitButton.setForeground(COLOR_TEXT_DARK);
+        headerExitButton.setFocusPainted(false);
+        headerExitButton.setContentAreaFilled(false);
+        headerExitButton.setOpaque(false);
+        headerExitButton.setBorder(BorderFactory.createLineBorder(COLOR_BORDER, 1));
+        headerExitButton.setPreferredSize(new Dimension(90, 34));
+        headerExitButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent event) {
+                headerExitButton.setBorder(BorderFactory.createLineBorder(new Color(118, 81, 53), 1));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent event) {
+                headerExitButton.setBorder(BorderFactory.createLineBorder(COLOR_BORDER, 1));
+            }
+        });
+        headerExitButton.addActionListener(event -> {
+            int choice = showConfirmSync("Exit", "Do you want to go back to the main menu?");
+            if (choice == JOptionPane.YES_OPTION) {
+                showLandingScreen();
+            }
+        });
+
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        actions.setOpaque(false);
+        actions.add(headerExitButton);
+
+        panel.add(textBlock, BorderLayout.WEST);
+        panel.add(actions, BorderLayout.EAST);
         return panel;
     }
 
     private JPanel buildLeftPane() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setPreferredSize(new Dimension(1220, 720));
-        panel.setBorder(BorderFactory.createEmptyBorder(0, 22, 22, 22));
+        defaultLeftPaneBorder = BorderFactory.createEmptyBorder(0, 22, 22, 22);
+        panel.setBorder(defaultLeftPaneBorder);
         panel.setBackground(COLOR_BACKGROUND);
 
         screenPanel.setOpaque(false);
@@ -255,7 +299,7 @@ public class GameWindow {
         screenPanel.add(buildShopScreen(), SCREEN_SHOP);
         screenPanel.add(buildInventoryScreen(), SCREEN_INVENTORY);
         screenPanel.add(buildProfileScreen(), SCREEN_PROFILE);
-        screenPanel.add(buildBattleScreen(), SCREEN_BATTLE);
+        screenPanel.add(battlePanel, SCREEN_BATTLE);
 
         panel.add(screenPanel, BorderLayout.CENTER);
         return panel;
@@ -355,11 +399,21 @@ public class GameWindow {
     }
 
     private JPanel buildCharacterScreen() {
-        JPanel panel = createCardPanel();
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setOpaque(true);
+        panel.setBackground(COLOR_CHARSEL_BACKGROUND);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(COLOR_BORDER, 1),
+                BorderFactory.createEmptyBorder(20, 24, 20, 24)));
 
-        panel.add(createHeading("Choose Character"));
+        JLabel heading = createHeading("Choose Character");
+        heading.setForeground(COLOR_CHARSEL_TEXT_DARK);
+        panel.add(heading);
         panel.add(Box.createVerticalStrut(8));
-        panel.add(createBody("Pick your character."));
+        JLabel introLabel = createBody("Pick your character.");
+        introLabel.setForeground(COLOR_CHARSEL_TEXT_MUTED);
+        panel.add(introLabel);
         panel.add(Box.createVerticalStrut(18));
 
         // If you later add separate image paths per hero, these are the three
@@ -380,7 +434,7 @@ public class GameWindow {
                 () -> selectHero(new Mage())));
         panel.add(Box.createVerticalStrut(18));
 
-        JButton backButton = createSecondaryButton("Back to Main Page");
+        JButton backButton = createCharacterSelectButton("Back to Main Page");
         backButton.addActionListener(event -> {
             showLandingScreen();
         });
@@ -479,18 +533,6 @@ public class GameWindow {
         forsakenButtonLocal.setAlignmentX(Component.CENTER_ALIGNMENT);
         forsakenButtonLocal.addActionListener(event -> launchArea3());
 
-        JButton inventoryButton = createPrimaryButton("Inventory");
-        inventoryButton.setMaximumSize(new Dimension(200, 42));
-        inventoryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        inventoryButton.addActionListener(event -> {
-            subtitleLabel.setText("View your inventory.");
-            showScreen(SCREEN_INVENTORY);
-            if (hero != null && !inventoryNarrationShown) {
-                inventoryNarrationShown = true;
-                playNarrationSequence("Inventory Narration", buildInventoryNarration());
-            }
-        });
-
         destinations.add(academyButton);
         destinations.add(Box.createVerticalStrut(8));
         destinations.add(forestButtonLocal);
@@ -498,8 +540,6 @@ public class GameWindow {
         destinations.add(edgeButton);
         destinations.add(Box.createVerticalStrut(8));
         destinations.add(forsakenButtonLocal);
-        destinations.add(Box.createVerticalStrut(8));
-        destinations.add(inventoryButton);
         destinations.add(Box.createVerticalGlue());
 
         midRow.add(mapCard, BorderLayout.CENTER);
@@ -517,6 +557,28 @@ public class GameWindow {
         panel.add(createHeading("Academy (Inside)"));
         panel.add(Box.createVerticalStrut(8));
         panel.add(createBody("Library, Training Ground, Shop, Principal's Office"));
+        panel.add(Box.createVerticalStrut(18));
+
+        JPanel academyMapCard = new JPanel(new BorderLayout(10, 10));
+        academyMapCard.setOpaque(true);
+        academyMapCard.setBackground(COLOR_PANEL);
+        academyMapCard.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(COLOR_BORDER, 1),
+                BorderFactory.createEmptyBorder(12, 12, 12, 12)));
+        academyMapCard.setAlignmentX(Component.LEFT_ALIGNMENT);
+        academyMapCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 260));
+
+        JLabel academyMapTitle = createHeading("Academy Map");
+        academyMapTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+        academyMapCard.add(academyMapTitle, BorderLayout.NORTH);
+
+        JPanel academyMapPlaceholder = new JPanel();
+        academyMapPlaceholder.setBackground(new Color(22, 26, 24));
+        academyMapPlaceholder.setPreferredSize(new Dimension(900, 180));
+        academyMapPlaceholder.setBorder(BorderFactory.createLineBorder(COLOR_BORDER, 2));
+        academyMapCard.add(academyMapPlaceholder, BorderLayout.CENTER);
+
+        panel.add(academyMapCard);
         panel.add(Box.createVerticalStrut(18));
 
         JButton libraryButton = createPrimaryButton("Library");
@@ -616,15 +678,6 @@ public class GameWindow {
 
     private JPanel buildShopScreen() {
         JPanel content = createCardPanel();
-
-        JButton topBackButton = createSecondaryButton("Back to Academy");
-        topBackButton.addActionListener(event -> {
-            subtitleLabel.setText("Explore Mystvale Academy.");
-            refreshHeroDashboard();
-            showScreen(SCREEN_ACADEMY);
-        });
-        content.add(topBackButton);
-        content.add(Box.createVerticalStrut(10));
 
         content.add(createHeading("Shop"));
         content.add(Box.createVerticalStrut(6));
@@ -747,160 +800,6 @@ public class GameWindow {
         panel.add(backButton);
         panel.add(Box.createVerticalGlue());
         return panel;
-    }
-
-    private JPanel buildBattleScreen() {
-        // Battle UI screen hosting current fight status and action buttons.
-        JPanel panel = createCardPanel();
-
-        battleTitleValue.setForeground(COLOR_TEXT_DARK);
-        battleTitleValue.setFont(getHeadingFont(30f));
-        battleRoundValue.setFont(getBodyFont(14f).deriveFont(Font.BOLD, 14f));
-        battleRoundValue.setForeground(COLOR_TEXT_MUTED);
-
-        panel.add(battleTitleValue);
-        panel.add(Box.createVerticalStrut(4));
-        panel.add(battleRoundValue);
-        panel.add(Box.createVerticalStrut(12));
-
-        JPanel heroCard = createBattleCard("Hero", battleHeroNameValue, battleHeroHpBar, battleHeroManaBar);
-        JPanel enemyCard = createBattleCard("Enemy", battleEnemyNameValue, battleEnemyHpBar, battleEnemyManaBar);
-        panel.add(heroCard);
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(enemyCard);
-        panel.add(Box.createVerticalStrut(12));
-
-        battleLogArea.setEditable(false);
-        battleLogArea.setLineWrap(true);
-        battleLogArea.setWrapStyleWord(true);
-        battleLogArea.setFont(getBodyFont(13f));
-        battleLogArea.setBackground(COLOR_PANEL);
-        battleLogArea.setForeground(COLOR_TEXT_DARK);
-
-        JScrollPane logScroll = new JScrollPane(battleLogArea);
-        // Lower the battle log height slightly so action rows remain visible in 720px
-        // main content.
-        logScroll.setPreferredSize(new Dimension(920, 110));
-        logScroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
-        panel.add(logScroll);
-        panel.add(Box.createVerticalStrut(8));
-
-        battleBasicButton = createPrimaryButton("Basic");
-        battleSkill1Button = createPrimaryButton("Skill 1");
-        battleSkill2Button = createPrimaryButton("Skill 2");
-        battleUltimateButton = createPrimaryButton("Ultimate");
-        battlePotionButton = createSecondaryButton("Potion");
-        battleRunButton = createSecondaryButton("Run");
-        battleBackButton = createSecondaryButton("Back to Main");
-        battleBackButton.setEnabled(false);
-
-        battleBasicButton.addActionListener(event -> submitBattleAction(0));
-        battleSkill1Button.addActionListener(event -> submitBattleAction(1));
-        battleSkill2Button.addActionListener(event -> submitBattleAction(2));
-        battleUltimateButton.addActionListener(event -> submitBattleAction(3));
-        battlePotionButton.addActionListener(event -> submitBattleAction(4));
-        battleRunButton.addActionListener(event -> submitBattleAction(5));
-        battleBackButton.addActionListener(event -> {
-            subtitleLabel.setText("Adventure overview.");
-            refreshHeroDashboard();
-            showScreen(SCREEN_MAIN);
-        });
-
-        // Condense button rows so all actions fit in the viewport.
-        JPanel row1 = new JPanel(new GridLayout(1, 3, 8, 0));
-        row1.setOpaque(false);
-        row1.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
-        row1.add(battleBasicButton);
-        row1.add(battleSkill1Button);
-        row1.add(battleSkill2Button);
-
-        JPanel row2 = new JPanel(new GridLayout(1, 3, 8, 0));
-        row2.setOpaque(false);
-        row2.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
-        row2.add(battleUltimateButton);
-        row2.add(battlePotionButton);
-        row2.add(battleRunButton);
-
-        JPanel row3 = new JPanel(new GridLayout(1, 1, 10, 0));
-        row3.setOpaque(false);
-        row3.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
-        row3.add(battleBackButton);
-
-        panel.add(row1);
-        panel.add(Box.createVerticalStrut(6));
-        panel.add(row2);
-        panel.add(Box.createVerticalStrut(6));
-        panel.add(row3);
-        // Remove flexible glue to prevent this page from pushing controls out of view.
-        // panel.add(Box.createVerticalGlue());
-
-        return panel;
-    }
-
-    private JPanel createBattleCard(String label, JLabel name, JProgressBar hp, JProgressBar mana) {
-        // Compact panel for hero/enemy HP-Mana info.
-        JPanel card = new JPanel();
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        // Minimize card height so the full action area remains visible in window.
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 156));
-        card.setBackground(COLOR_PANEL);
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(COLOR_BORDER, 1),
-                BorderFactory.createEmptyBorder(6, 8, 6, 8)));
-
-        JLabel title = new JLabel(label);
-        title.setFont(getBodyFont(14f).deriveFont(Font.BOLD, 14f));
-        title.setForeground(COLOR_TEXT_DARK);
-        name.setForeground(COLOR_TEXT_DARK);
-
-        hp.setStringPainted(true);
-        hp.setForeground(COLOR_HERO_HP); // enemy/hero HP bar shares same red tone
-        hp.setBackground(Color.decode("#14215A"));
-        mana.setStringPainted(true);
-        mana.setForeground(COLOR_HERO_MANA); // enemy/hero Mana bar shares same blue tone
-        mana.setBackground(Color.decode("#14215A"));
-
-        card.add(title);
-        card.add(Box.createVerticalStrut(2));
-        card.add(name);
-
-        hp.setFont(getBodyFont(14f));
-        mana.setFont(getBodyFont(14f));
-
-        if ("Enemy".equals(label)) {
-            card.add(Box.createVerticalStrut(8));
-            card.add(createEnemySpritePanel());
-        }
-        card.add(Box.createVerticalStrut(8));
-        JLabel hpLabel = new JLabel("HP");
-        hpLabel.setFont(getBodyFont(14f).deriveFont(Font.BOLD, 14f));
-        card.add(hpLabel);
-        card.add(hp);
-        card.add(Box.createVerticalStrut(6));
-        JLabel manaLabel = new JLabel("Mana");
-        manaLabel.setFont(getBodyFont(14f).deriveFont(Font.BOLD, 14f));
-        card.add(manaLabel);
-        card.add(mana);
-        return card;
-    }
-
-    private JPanel createEnemySpritePanel() {
-        JPanel spritePanel = new JPanel(new BorderLayout());
-        spritePanel.setOpaque(true);
-        spritePanel.setBackground(COLOR_PANEL);
-        spritePanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(COLOR_BORDER, 1),
-                BorderFactory.createEmptyBorder(6, 6, 6, 6)));
-        spritePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 116));
-        spritePanel.setPreferredSize(new Dimension(160, 116));
-
-        battleEnemySpriteLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        battleEnemySpriteLabel.setVerticalAlignment(SwingConstants.CENTER);
-        battleEnemySpriteLabel.setFont(getBodyFont(12f).deriveFont(Font.BOLD, 12f));
-        battleEnemySpriteLabel.setForeground(COLOR_TEXT_MUTED);
-
-        spritePanel.add(battleEnemySpriteLabel, BorderLayout.CENTER);
-        return spritePanel;
     }
 
     private JPanel buildHeroSummaryCard() {
@@ -1160,7 +1059,7 @@ public class GameWindow {
     private JPanel createCharacterButton(String title, String description, Runnable action) {
         JPanel wrapper = new JPanel();
         wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
-        wrapper.setBackground(COLOR_PANEL);
+        wrapper.setBackground(COLOR_CHARSEL_PANEL);
         wrapper.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(COLOR_BORDER, 1),
                 BorderFactory.createEmptyBorder(12, 12, 12, 12)));
@@ -1168,9 +1067,10 @@ public class GameWindow {
 
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(getHeadingFont(22f));
-        titleLabel.setForeground(COLOR_TEXT_DARK);
+        titleLabel.setForeground(COLOR_CHARSEL_TEXT_DARK);
 
         JLabel bodyLabel = createBody("<html>" + description + "</html>");
+        bodyLabel.setForeground(COLOR_CHARSEL_TEXT_MUTED);
 
         // Add the character image here for each selection card.
         // Example:
@@ -1183,7 +1083,7 @@ public class GameWindow {
         // call in buildCharacterScreen() and pass the correct image path into this
         // method.
 
-        JButton chooseButton = createPrimaryButton("Play " + title);
+        JButton chooseButton = createCharacterSelectButton("Play " + title);
         chooseButton.addActionListener(event -> action.run());
 
         wrapper.add(titleLabel);
@@ -1198,6 +1098,47 @@ public class GameWindow {
         return wrapper;
     }
 
+    private JButton createCharacterSelectButton(String text) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics graphics) {
+                Graphics2D graphics2D = (Graphics2D) graphics.create();
+                graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                ButtonModel model = getModel();
+                Color fill = new Color(118, 81, 53);
+                if (model.isPressed()) {
+                    fill = new Color(96, 65, 42);
+                } else if (model.isRollover()) {
+                    fill = new Color(132, 92, 62);
+                }
+                graphics2D.setColor(fill);
+                graphics2D.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 14, 14);
+                graphics2D.dispose();
+                super.paintComponent(graphics);
+            }
+
+            @Override
+            protected void paintBorder(Graphics graphics) {
+                Graphics2D graphics2D = (Graphics2D) graphics.create();
+                graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                graphics2D.setColor(new Color(90, 62, 41));
+                graphics2D.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 14, 14);
+                graphics2D.dispose();
+            }
+        };
+        button.setFont(getBodyFont(14f).deriveFont(Font.BOLD, 14f));
+        button.setForeground(Color.WHITE);
+        button.setBackground(new Color(118, 81, 53));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 16, 10, 16));
+        button.setRolloverEnabled(true);
+        button.setContentAreaFilled(false);
+        button.setOpaque(false);
+        button.setFocusPainted(false);
+        button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
+        button.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return button;
+    }
+
     private JPanel createCardPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -1205,6 +1146,7 @@ public class GameWindow {
                 BorderFactory.createLineBorder(COLOR_BORDER, 1),
                 BorderFactory.createEmptyBorder(20, 20, 20, 20)));
         panel.setBackground(COLOR_PANEL);
+        panel.setOpaque(true);
         return panel;
     }
 
@@ -1262,7 +1204,7 @@ public class GameWindow {
         return createStyledButton(
                 text,
                 primaryButtonSkin,
-                Color.decode("#14215A"),
+                new Color(118, 81, 53),
                 Color.WHITE,
                 getBodyFont(14f).deriveFont(Font.BOLD, 14f),
                 42);
@@ -1272,10 +1214,20 @@ public class GameWindow {
         return createStyledButton(
                 text,
                 secondaryButtonSkin,
-                Color.decode("#20357D"),
+                new Color(118, 81, 53),
                 Color.WHITE,
                 getBodyFont(13f).deriveFont(Font.BOLD, 13f),
                 40);
+    }
+
+    private JButton createBattleButton(String text) {
+        return createStyledButton(
+                text,
+                null,
+                COLOR_BATTLE_SURFACE,
+                Color.WHITE,
+                getBodyFont(15f).deriveFont(Font.BOLD, 15f),
+                58);
     }
 
     private JButton createStyledButton(String text, ButtonSkin skin, Color fallbackColor, Color textColor, Font font,
@@ -1306,6 +1258,46 @@ public class GameWindow {
         } catch (Exception ignored) {
             return null;
         }
+    }
+
+    private BufferedImage loadLandingBackground() {
+        // Prefer classpath resource so the image works no matter the run directory.
+        try (InputStream classpathStream = getClass()
+                .getResourceAsStream("/com/ror/models/assets/images/landing-background-source.jpg")) {
+            if (classpathStream != null) {
+                BufferedImage image = ImageIO.read(classpathStream);
+                if (image != null) {
+                    return image;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        try (InputStream classpathStream = getClass().getResourceAsStream("/com/ror/models/assets/images/title.png")) {
+            if (classpathStream != null) {
+                BufferedImage image = ImageIO.read(classpathStream);
+                if (image != null) {
+                    return image;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        // Fallbacks for file-based runs in IDEs with different working directories.
+        String[] candidates = {
+                "src/com/ror/models/assets/images/landing-background-source.jpg",
+                "assets/images/landing-background-source.jpg",
+                "src/com/ror/models/assets/images/title.png",
+                "assets/images/title.png"
+        };
+
+        for (String candidate : candidates) {
+            BufferedImage image = loadImageAsset(candidate);
+            if (image != null) {
+                return image;
+            }
+        }
+
+        return null;
     }
 
     // Font loader for custom fonts
@@ -1414,13 +1406,19 @@ public class GameWindow {
     private void updateEnemySprite(Entity enemy) {
         BufferedImage sprite = loadEnemySprite(enemy);
         if (sprite == null) {
-            battleEnemySpriteLabel.setIcon(null);
-            battleEnemySpriteLabel.setText("No Sprite");
+            BufferedImage placeholder = loadImageAsset(ENEMY_IMAGE_DIRECTORY + "placeholder.png");
+            if (placeholder != null) {
+                battlePanel.getBattleEnemySpriteLabel().setText("");
+                battlePanel.getBattleEnemySpriteLabel().setIcon(createScaledSpriteIcon(placeholder, 96, 96));
+            } else {
+                battlePanel.getBattleEnemySpriteLabel().setIcon(null);
+                battlePanel.getBattleEnemySpriteLabel().setText("");
+            }
             return;
         }
 
-        battleEnemySpriteLabel.setText("");
-        battleEnemySpriteLabel.setIcon(createScaledSpriteIcon(sprite, 96, 96));
+        battlePanel.getBattleEnemySpriteLabel().setText("");
+        battlePanel.getBattleEnemySpriteLabel().setIcon(createScaledSpriteIcon(sprite, 96, 96));
     }
 
     private BufferedImage loadEnemySprite(Entity enemy) {
@@ -1572,72 +1570,47 @@ public class GameWindow {
                 super.paintComponent(graphics);
 
                 Graphics2D graphics2D = (Graphics2D) graphics.create();
-                graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
-                if (landingBackground != null) {
-                    // Adjust these crop values if your new background image needs a
-                    // different framing on the main screen.
-                    // We trim part of the top and bottom of the source image so the title
-                    // screen focuses on the center of the artwork before scaling it to fit
-                    // the current window size.
-                    int sourceY = 150;
-                    int sourceHeight = Math.max(1, landingBackground.getHeight() - 210);
-                    graphics2D.drawImage(
-                            landingBackground,
-                            0,
-                            0,
-                            getWidth(),
-                            getHeight(),
-                            0,
-                            sourceY,
-                            landingBackground.getWidth(),
-                            sourceY + sourceHeight,
-                            null);
-                } else {
-                    // Fallback background used when no asset file is available.
-                    graphics2D.setColor(new Color(27, 13, 16));
-                    graphics2D.fillRect(0, 0, getWidth(), getHeight());
-                }
-
-                // Dark overlay keeps the title and buttons readable even when the image
-                // behind them is bright or detailed.
-                graphics2D.setColor(new Color(11, 5, 8, 180));
+                // Temporarily use a plain backdrop with no image.
+                graphics2D.setColor(new Color(18, 12, 10));
                 graphics2D.fillRect(0, 0, getWidth(), getHeight());
                 graphics2D.dispose();
             }
         };
 
-        panel.setLayout(new BorderLayout());
+        panel.setLayout(new GridBagLayout());
 
         JPanel content = new JPanel();
         content.setOpaque(false);
-        content.setBorder(BorderFactory.createEmptyBorder(70, 80, 70, 80));
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setMaximumSize(new Dimension(760, Integer.MAX_VALUE));
 
         JLabel eyebrow = new JLabel("REALMS OF RIFTBORNE");
         eyebrow.setFont(getBodyFont(18f).deriveFont(Font.BOLD, 18f));
         eyebrow.setForeground(new Color(234, 190, 137));
-        eyebrow.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+        eyebrow.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 
         JLabel title = new JLabel("Mystvale Academy");
         title.setFont(getHeadingFont(56f));
         title.setForeground(new Color(255, 238, 216));
-        title.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+        title.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 
-        JLabel body = new JLabel("<html>Defeat Kim Morvain and escape Mystvale Academy.</html>");
+        JLabel body = new JLabel("<html><div style='text-align:center;'>Defeat Kim Morvain and escape Mystvale Academy.</div></html>");
         body.setFont(getBodyFont(18f));
         body.setForeground(new Color(232, 219, 208));
-        body.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+        body.setHorizontalAlignment(SwingConstants.CENTER);
+        body.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        body.setMaximumSize(new Dimension(760, 50));
 
-        JButton startButton = createPrimaryButton("Play the Game");
+        JButton startButton = createPrimaryButton("Play");
         startButton.setPreferredSize(new Dimension(220, 46));
         startButton.setMaximumSize(new Dimension(220, 46));
+        startButton.setAlignmentX(JLabel.CENTER_ALIGNMENT);
         startButton.addActionListener(event -> openCharacterSelectFromLanding());
 
         JButton exitButton = createSecondaryButton("Exit");
-        exitButton.setPreferredSize(new Dimension(220, 44));
-        exitButton.setMaximumSize(new Dimension(220, 44));
+        exitButton.setPreferredSize(new Dimension(220, 46));
+        exitButton.setMaximumSize(new Dimension(220, 46));
+        exitButton.setAlignmentX(JLabel.CENTER_ALIGNMENT);
         exitButton.addActionListener(event -> frame.dispose());
 
         content.add(Box.createVerticalGlue());
@@ -1647,12 +1620,21 @@ public class GameWindow {
         content.add(Box.createVerticalStrut(14));
         content.add(body);
         content.add(Box.createVerticalStrut(26));
-        content.add(startButton);
-        content.add(Box.createVerticalStrut(10));
-        content.add(exitButton);
+        JPanel landingButtons = new JPanel(new GridLayout(1, 2, 26, 0));
+        landingButtons.setOpaque(false);
+        landingButtons.setMaximumSize(new Dimension(470, 46));
+        landingButtons.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+        landingButtons.add(startButton);
+        landingButtons.add(exitButton);
+
+        content.add(landingButtons);
         content.add(Box.createVerticalGlue());
 
-        panel.add(content, BorderLayout.WEST);
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.anchor = GridBagConstraints.CENTER;
+        panel.add(content, constraints);
         return panel;
     }
 
@@ -1887,20 +1869,16 @@ public class GameWindow {
         boolean hasQuest2 = !hero.isLibraryQuest2Done();
 
         if (!hasQuest1 && !hasQuest2) {
-            JOptionPane.showMessageDialog(frame, "All library quests are already completed.");
+            showInfoSync("Library", "All library quests are already completed.");
             return;
         }
 
         int questChoice;
         if (hasQuest1 && hasQuest2) {
             Object[] options = { "Lost Book Quest", "Riddle Quest", "Back" };
-            questChoice = JOptionPane.showOptionDialog(
-                    frame,
-                    "Choose a library quest.",
+            questChoice = showOptionSync(
                     "Library",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
+                    "Choose a library quest.",
                     options,
                     options[0]);
         } else if (hasQuest1) {
@@ -1910,12 +1888,10 @@ public class GameWindow {
         }
 
         if (questChoice == 0 && hasQuest1) {
-            int accept = JOptionPane.showConfirmDialog(
-                    frame,
-                    "Accept 'Find the Lost Book' quest?",
+            int accept = showConfirmSync(
                     "Library Quest",
-                    JOptionPane.YES_NO_OPTION);
-            if (accept == JOptionPane.YES_OPTION) {
+                    "Accept 'Find the Lost Book' quest?");
+            if (accept == 0) {
                 hero.setLibraryQuest1Done(true);
                 grantRewards(800, 120, "Lost Book quest complete!");
             }
@@ -1923,12 +1899,10 @@ public class GameWindow {
         }
 
         if (questChoice == 1 && hasQuest2) {
-            int accept = JOptionPane.showConfirmDialog(
-                    frame,
-                    "Accept 'Riddles of the Library' quest?",
+            int accept = showConfirmSync(
                     "Library Quest",
-                    JOptionPane.YES_NO_OPTION);
-            if (accept != JOptionPane.YES_OPTION) {
+                    "Accept 'Riddles of the Library' quest?");
+            if (accept != 0) {
                 return;
             }
 
@@ -1954,11 +1928,9 @@ public class GameWindow {
                 hero.setLibraryQuest2Done(true);
                 grantRewards(1200, 220, "Riddle quest complete!");
             } else {
-                JOptionPane.showMessageDialog(
-                        frame,
-                        "Not all riddles were correct. Try the quest again.",
+                showInfoSync(
                         "Library",
-                        JOptionPane.INFORMATION_MESSAGE);
+                        "Not all riddles were correct. Try the quest again.");
             }
         }
     }
@@ -1975,7 +1947,7 @@ public class GameWindow {
         }
 
         if (hero.hasFinishedAllTraining()) {
-            JOptionPane.showMessageDialog(frame, "Training is already complete.");
+            showInfoSync("Training Ground", "Training is already complete.");
             return;
         }
 
@@ -1988,27 +1960,21 @@ public class GameWindow {
                     "Quit Training"
             };
 
-            int choice = JOptionPane.showOptionDialog(
-                    frame,
-                    "Complete all 4 trainings to unlock eligibility for Forest of Reverie.",
+            int choice = showOptionSync(
                     "Training Ground",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
+                    "Complete all 4 trainings to unlock eligibility for Forest of Reverie.",
                     options,
                     options[0]);
 
-            if (choice == 4 || choice == JOptionPane.CLOSED_OPTION) {
+            if (choice == 4 || choice == -1) {
                 if (hero.getNumberOfTrainingFinished() > 0 && hero.getNumberOfTrainingFinished() < 4) {
-                    int confirm = JOptionPane.showConfirmDialog(
-                            frame,
-                            "Quit now? Incomplete training progress will reset.",
+                    int confirm = showConfirmSync(
                             "Training Ground",
-                            JOptionPane.YES_NO_OPTION);
+                            "Quit now? Incomplete training progress will reset.");
 
-                    if (confirm == JOptionPane.YES_OPTION) {
+                    if (confirm == 0) {
                         resetTrainingProgress();
-                        JOptionPane.showMessageDialog(frame, "Training progress reset.");
+                        showInfoSync("Training Ground", "Training progress reset.");
                         refreshHeroDashboard();
                         refreshProfilePanel();
                         return;
@@ -2102,9 +2068,11 @@ public class GameWindow {
         refreshInventoryPanel();
         refreshHeroDashboard();
 
-        String cappedNote = quantity < requestedQuantity ? " Max capacity reached, so only " + quantity + " bought." : "";
+        String cappedNote = quantity < requestedQuantity ? " Max capacity reached, so only " + quantity + " bought."
+                : "";
         shopStatusLabel.setText(
-                "Purchased " + quantity + " " + names[itemChoice] + " for " + statFormat.format(totalCost) + " gold." + cappedNote);
+                "Purchased " + quantity + " " + names[itemChoice] + " for " + statFormat.format(totalCost) + " gold."
+                        + cappedNote);
     }
 
     private void openPrincipalOfficeGui() {
@@ -2142,20 +2110,16 @@ public class GameWindow {
             return;
         }
 
-        JOptionPane.showMessageDialog(
-                frame,
-                "Not eligible yet.\nFinish training and defeat area bosses first.",
+        showInfoSync(
                 "Principal's Office",
-                JOptionPane.INFORMATION_MESSAGE);
+                "Not eligible yet.\nFinish training and defeat area bosses first.");
     }
 
     private void resolveTrainingTask(String taskName, Runnable markComplete) {
-        int start = JOptionPane.showConfirmDialog(
-                frame,
-                "Start " + taskName + " challenge?",
+        int start = showConfirmSync(
                 "Training Ground",
-                JOptionPane.YES_NO_OPTION);
-        if (start != JOptionPane.YES_OPTION) {
+                "Start " + taskName + " challenge?");
+        if (start != 0) {
             return;
         }
 
@@ -2163,9 +2127,9 @@ public class GameWindow {
         if (success) {
             markComplete.run();
             hero.setNumberOfTrainingFinished(hero.getNumberOfTrainingFinished() + 1);
-            JOptionPane.showMessageDialog(frame, taskName + " complete!");
+            showInfoSync("Training Ground", taskName + " complete!");
         } else {
-            JOptionPane.showMessageDialog(frame, taskName + " failed. Try again.");
+            showInfoSync("Training Ground", taskName + " failed. Try again.");
         }
     }
 
@@ -2217,21 +2181,15 @@ public class GameWindow {
         refreshInventoryPanel();
         refreshProfilePanel();
 
-        JOptionPane.showMessageDialog(
-                frame,
-                message + "\nRewards: +" + statFormat.format(gold) + " gold, +" + statFormat.format(xp) + " XP.",
+        showInfoSync(
                 "Rewards",
-                JOptionPane.INFORMATION_MESSAGE);
+                message + "\nRewards: +" + statFormat.format(gold) + " gold, +" + statFormat.format(xp) + " XP.");
     }
 
     private boolean askRiddle(String question, Object[] options, int correctIndex) {
-        int answer = JOptionPane.showOptionDialog(
-                frame,
-                question,
+        int answer = showOptionSync(
                 "Library Riddle",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
+                question,
                 options,
                 options[0]);
 
@@ -2289,7 +2247,7 @@ public class GameWindow {
             return;
         }
         if (!hero.hasUnlockedArea1()) {
-            JOptionPane.showMessageDialog(frame, "Forest of Reverie is still locked.");
+            showInfoSync("Forest of Reverie", "Forest of Reverie is still locked.");
             return;
         }
         startAreaAdventureAsync(this::startForestOfReverieAdventure);
@@ -2300,7 +2258,7 @@ public class GameWindow {
             return;
         }
         if (!hero.hasUnlockedArea2()) {
-            JOptionPane.showMessageDialog(frame, "Reverie's Edge is still locked.");
+            showInfoSync("Reverie's Edge", "Reverie's Edge is still locked.");
             return;
         }
         startAreaAdventureAsync(this::startReveriesEdgeAdventure);
@@ -2311,25 +2269,22 @@ public class GameWindow {
             return;
         }
         if (!hero.hasUnlockedArea3()) {
-            JOptionPane.showMessageDialog(frame, "Forsaken Lands is still locked.");
+            showInfoSync("Forsaken Lands", "Forsaken Lands is still locked.");
             return;
         }
         startAreaAdventureAsync(this::startForsakenLandsAdventure);
     }
 
     private void startAreaAdventureAsync(Runnable adventureTask) {
-        setBattleButtonsEnabled(false);
-        battleBackButton.setEnabled(false);
+        battlePanel.setBattleButtonsEnabled(false);
 
         Thread worker = new Thread(() -> {
             try {
                 adventureTask.run();
             } catch (Exception exception) {
-                SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
-                        frame,
-                        "Area flow error: " + exception.getMessage(),
+                SwingUtilities.invokeLater(() -> showWarningSync(
                         "Error",
-                        JOptionPane.ERROR_MESSAGE));
+                        "Area flow error: " + exception.getMessage()));
             } finally {
                 SwingUtilities.invokeLater(() -> {
                     refreshHeroDashboard();
@@ -2342,8 +2297,7 @@ public class GameWindow {
                         subtitleLabel.setText("Adventure overview.");
                         showScreen(SCREEN_MAIN);
                     }
-                    setBattleButtonsEnabled(false);
-                    battleBackButton.setEnabled(true);
+                    battlePanel.setBattleButtonsEnabled(false);
                 });
             }
         }, "area-adventure");
@@ -2472,15 +2426,15 @@ public class GameWindow {
 
         for (int i = 0; i < encounters.length; i++) {
             Entity enemy = encounters[i];
-            String header = "Encounter " + (i + 1) + "/" + encounters.length + ": " + enemy.getName();
+            String header = enemy.getName();
 
             int proceed = showConfirmSync(areaName, header + "\nStart battle?");
-            if (proceed != JOptionPane.YES_OPTION) {
+            if (proceed != 0) {
                 showInfoSync(areaName, "Adventure cancelled.");
                 return false;
             }
 
-            BattleOutcome outcome = runButtonBattle(enemy, header);
+            BattleOutcome outcome = runButtonBattle(enemy, areaName);
             if (outcome == BattleOutcome.RAN) {
                 showInfoSync(areaName, "You retreated from battle.");
                 return false;
@@ -2525,7 +2479,7 @@ public class GameWindow {
                 battleLog = appendBattleLog(battleLog, hero.getName() + " is stunned and loses this turn.");
             } else {
                 int choice = chooseBattleAction(enemy, round, battleTitle, battleLog);
-                if (choice == JOptionPane.CLOSED_OPTION) {
+                if (choice == -1) {
                     choice = 5;
                 }
 
@@ -2617,42 +2571,43 @@ public class GameWindow {
 
     private int chooseBattleAction(Entity enemy, int round, String battleTitle, String battleLog) {
         runOnEdtSync(() -> {
-            battleTitleValue.setText(battleTitle);
-            battleRoundValue.setText("Round " + round);
-            battleHeroNameValue.setText(hero.getName());
-            battleEnemyNameValue.setText(enemy.getName());
+            battlePanel.restoreBattleButtons();
+            battlePanel.getBattleTitleValue().setText(battleTitle);
+            battlePanel.getBattleRoundValue().setText("Round " + round);
+            battlePanel.getBattleHeroNameValue().setText(hero.getName());
+            battlePanel.getBattleEnemyNameValue().setText(enemy.getName());
             updateEnemySprite(enemy);
             updateBattleBars(enemy);
-            battleLogArea.setText(truncateBattleLog(battleLog));
-            battleLogArea.setCaretPosition(battleLogArea.getDocument().getLength());
-            subtitleLabel.setText("Battle in progress.");
+            battlePanel.getBattleLogArea().setText(truncateBattleLog(battleLog));
+            battlePanel.getBattleLogArea().setCaretPosition(battlePanel.getBattleLogArea().getDocument().getLength());
+            subtitleLabel.setText(battleTitle);
             showScreen(SCREEN_BATTLE);
-            setBattleButtonsEnabled(true);
-            battleBackButton.setEnabled(false);
+            battlePanel.setBattleButtonsEnabled(true);
         });
 
         return waitForBattleAction();
     }
 
     private void updateBattleBars(Entity enemy) {
-        battleHeroHpBar.setMaximum(Math.max(1, hero.getHpCap()));
-        battleHeroHpBar.setValue(Math.max(0, hero.getHp()));
-        battleHeroHpBar
+        battlePanel.getBattleHeroHpBar().setMaximum(Math.max(1, hero.getHpCap()));
+        battlePanel.getBattleHeroHpBar().setValue(Math.max(0, hero.getHp()));
+        battlePanel.getBattleHeroHpBar()
                 .setString(statFormat.format(Math.max(0, hero.getHp())) + " / " + statFormat.format(hero.getHpCap()));
+        battlePanel.getBattleHeroLevelValue().setText("Level " + hero.getLevel());
 
-        battleHeroManaBar.setMaximum(Math.max(1, hero.getManaCap()));
-        battleHeroManaBar.setValue(Math.max(0, hero.getMana()));
-        battleHeroManaBar.setString(
+        battlePanel.getBattleHeroManaBar().setMaximum(Math.max(1, hero.getManaCap()));
+        battlePanel.getBattleHeroManaBar().setValue(Math.max(0, hero.getMana()));
+        battlePanel.getBattleHeroManaBar().setString(
                 statFormat.format(Math.max(0, hero.getMana())) + " / " + statFormat.format(hero.getManaCap()));
 
-        battleEnemyHpBar.setMaximum(Math.max(1, enemy.getHpCap()));
-        battleEnemyHpBar.setValue(Math.max(0, enemy.getHp()));
-        battleEnemyHpBar
+        battlePanel.getBattleEnemyHpBar().setMaximum(Math.max(1, enemy.getHpCap()));
+        battlePanel.getBattleEnemyHpBar().setValue(Math.max(0, enemy.getHp()));
+        battlePanel.getBattleEnemyHpBar()
                 .setString(statFormat.format(Math.max(0, enemy.getHp())) + " / " + statFormat.format(enemy.getHpCap()));
 
-        battleEnemyManaBar.setMaximum(Math.max(1, enemy.getManaCap()));
-        battleEnemyManaBar.setValue(Math.max(0, enemy.getMana()));
-        battleEnemyManaBar.setString(
+        battlePanel.getBattleEnemyManaBar().setMaximum(Math.max(1, enemy.getManaCap()));
+        battlePanel.getBattleEnemyManaBar().setValue(Math.max(0, enemy.getMana()));
+        battlePanel.getBattleEnemyManaBar().setString(
                 statFormat.format(Math.max(0, enemy.getMana())) + " / " + statFormat.format(enemy.getManaCap()));
     }
 
@@ -2662,7 +2617,7 @@ public class GameWindow {
                 return;
             }
             pendingBattleAction = action;
-            runOnEdtSync(() -> setBattleButtonsEnabled(false));
+            runOnEdtSync(() -> battlePanel.setBattleButtonsEnabled(false));
             battleActionLock.notifyAll();
         }
     }
@@ -2684,18 +2639,6 @@ public class GameWindow {
         }
     }
 
-    private void setBattleButtonsEnabled(boolean enabled) {
-        if (battleBasicButton == null) {
-            return;
-        }
-        battleBasicButton.setEnabled(enabled);
-        battleSkill1Button.setEnabled(enabled);
-        battleSkill2Button.setEnabled(enabled);
-        battleUltimateButton.setEnabled(enabled);
-        battlePotionButton.setEnabled(enabled);
-        battleRunButton.setEnabled(enabled);
-    }
-
     private void runOnEdtSync(Runnable task) {
         if (SwingUtilities.isEventDispatchThread()) {
             task.run();
@@ -2709,54 +2652,46 @@ public class GameWindow {
     }
 
     private void showInfoSync(String title, String message) {
-        runOnEdtSync(() -> JOptionPane.showMessageDialog(
-                frame,
-                message,
-                title,
-                JOptionPane.INFORMATION_MESSAGE));
+        runOnEdtSync(() -> {
+            if (overlay != null) {
+                overlay.showMessage(title, message);
+            }
+        });
     }
 
     private void showNarrationSync(String title, String message) {
-        runOnEdtSync(() -> JOptionPane.showOptionDialog(
-                frame,
-                message,
-                title,
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
-                null,
-                new Object[] { "Next" },
-                "Next"));
+        runOnEdtSync(() -> {
+            if (overlay != null) {
+                overlay.showMessage(title, message);
+            }
+        });
     }
 
     private void showWarningSync(String title, String message) {
-        runOnEdtSync(() -> JOptionPane.showMessageDialog(
-                frame,
-                message,
-                title,
-                JOptionPane.WARNING_MESSAGE));
+        runOnEdtSync(() -> {
+            if (overlay != null) {
+                overlay.showMessage(title, message);
+            }
+        });
     }
 
     private int showConfirmSync(String title, String message) {
-        final int[] choice = { JOptionPane.NO_OPTION };
-        runOnEdtSync(() -> choice[0] = JOptionPane.showConfirmDialog(
-                frame,
-                message,
-                title,
-                JOptionPane.YES_NO_OPTION));
+        final int[] choice = { 1 };
+        runOnEdtSync(() -> {
+            if (overlay != null) {
+                choice[0] = overlay.showConfirm(title, message);
+            }
+        });
         return choice[0];
     }
 
     private int showOptionSync(String title, String message, Object[] options, Object initial) {
-        final int[] choice = { JOptionPane.CLOSED_OPTION };
-        runOnEdtSync(() -> choice[0] = JOptionPane.showOptionDialog(
-                frame,
-                message,
-                title,
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                options,
-                initial));
+        final int[] choice = { -1 };
+        runOnEdtSync(() -> {
+            if (overlay != null) {
+                choice[0] = overlay.showOptions(title, message, options, initial);
+            }
+        });
         return choice[0];
     }
 
@@ -2962,9 +2897,9 @@ public class GameWindow {
                 "Back"
         };
 
-        int choice = showOptionSync("Battle Inventory", "Choose a potion.", options, options[0]);
+        int choice = showOptionSync("Inventory", "Choose a potion.", options, options[0]);
 
-        if (choice == 6 || choice == JOptionPane.CLOSED_OPTION) {
+        if (choice == 6 || choice == -1) {
             return;
         }
 
@@ -2976,7 +2911,7 @@ public class GameWindow {
                 if (inventory.getSmallHealthPotion() > 0) {
                     inventory.useSmallHealthPotion(hero);
                 } else {
-                    showInfoSync("Battle Inventory", "No Small Health Potion left.");
+                    showInfoSync("Inventory", "No Small Health Potion left.");
                     return;
                 }
             }
@@ -2984,7 +2919,7 @@ public class GameWindow {
                 if (inventory.getMediumHealthPotion() > 0) {
                     inventory.useMediumHealthPotion(hero);
                 } else {
-                    showInfoSync("Battle Inventory", "No Medium Health Potion left.");
+                    showInfoSync("Inventory", "No Medium Health Potion left.");
                     return;
                 }
             }
@@ -2992,7 +2927,7 @@ public class GameWindow {
                 if (inventory.getLargeHealthPotion() > 0) {
                     inventory.useLargeHealthPotion(hero);
                 } else {
-                    showInfoSync("Battle Inventory", "No Large Health Potion left.");
+                    showInfoSync("Inventory", "No Large Health Potion left.");
                     return;
                 }
             }
@@ -3000,7 +2935,7 @@ public class GameWindow {
                 if (inventory.getSmallManaPotion() > 0) {
                     inventory.useSmallManaPotion(hero);
                 } else {
-                    showInfoSync("Battle Inventory", "No Small Mana Potion left.");
+                    showInfoSync("Inventory", "No Small Mana Potion left.");
                     return;
                 }
             }
@@ -3008,7 +2943,7 @@ public class GameWindow {
                 if (inventory.getMediumManaPotion() > 0) {
                     inventory.useMediumManaPotion(hero);
                 } else {
-                    showInfoSync("Battle Inventory", "No Medium Mana Potion left.");
+                    showInfoSync("Inventory", "No Medium Mana Potion left.");
                     return;
                 }
             }
@@ -3016,7 +2951,7 @@ public class GameWindow {
                 if (inventory.getLargeManaPotion() > 0) {
                     inventory.useLargeManaPotion(hero);
                 } else {
-                    showInfoSync("Battle Inventory", "No Large Mana Potion left.");
+                    showInfoSync("Inventory", "No Large Mana Potion left.");
                     return;
                 }
             }
@@ -3027,7 +2962,7 @@ public class GameWindow {
 
         int hpGain = Math.max(0, hero.getHp() - hpBefore);
         int manaGain = Math.max(0, hero.getMana() - manaBefore);
-        showInfoSync("Battle Inventory",
+        showInfoSync("Inventory",
                 "Potion used.\nHP +" + statFormat.format(hpGain) + " | Mana +" + statFormat.format(manaGain));
         refreshInventoryPanel();
         refreshHeroDashboard();
@@ -3108,7 +3043,7 @@ public class GameWindow {
             return true;
         }
 
-        JOptionPane.showMessageDialog(frame, "Choose a character first.");
+        showInfoSync("Action Required", "Choose a character first.");
         return false;
     }
 
@@ -3429,5 +3364,32 @@ public class GameWindow {
 
     private void showScreen(String screenName) {
         screenLayout.show(screenPanel, screenName);
+
+        boolean isBattleScreen = SCREEN_BATTLE.equals(screenName);
+        if (headerPanel != null) {
+            headerPanel.setVisible(!isBattleScreen);
+        }
+        if (headerExitButton != null) {
+            boolean hideExit = SCREEN_CHARACTER.equals(screenName) || SCREEN_STORY.equals(screenName);
+            headerExitButton.setVisible(!hideExit);
+        }
+        if (leftPane != null) {
+            leftPane.setBackground(isBattleScreen ? COLOR_BATTLE_PANEL : COLOR_BACKGROUND);
+            leftPane.setBorder(isBattleScreen ? BorderFactory.createEmptyBorder() : defaultLeftPaneBorder);
+        }
+        if (screenPanel != null) {
+            screenPanel.setOpaque(isBattleScreen);
+            screenPanel.setBackground(isBattleScreen ? COLOR_BATTLE_PANEL : COLOR_BACKGROUND);
+        }
+    }
+
+    @Override
+    public void onBattleAction(int action) {
+        submitBattleAction(action);
+    }
+
+    @Override
+    public void onShowAttackPanel() {
+        battlePanel.showAttackPanel();
     }
 }
