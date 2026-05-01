@@ -179,7 +179,7 @@ public class GameWindow implements BattlePanel.BattleActionListener {
         frame.setVisible(true);
             System.out.println("DEBUG: Working Directory = " + System.getProperty("user.dir"));
         showLandingScreen();
-        sound.play("src/com/ror/models/assets/sounds/titleScreen.wav");
+        SoundManager.playMusic("src/com/ror/models/assets/sounds/titleScreen.wav");
     }
 
     // -------------------------------------------------------------------------
@@ -202,6 +202,15 @@ public class GameWindow implements BattlePanel.BattleActionListener {
         rootPanel.add(buildLandingScreen(), ROOT_LANDING);
         rootPanel.add(buildGameShell(), ROOT_GAME);
         window.setLocationRelativeTo(null);
+
+        window.addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent e) {
+            System.out.println("Closing game... stopping audio.");
+            SoundManager.shutdownSound();
+            System.exit(0);
+        }
+    });
 
         return window;
     }
