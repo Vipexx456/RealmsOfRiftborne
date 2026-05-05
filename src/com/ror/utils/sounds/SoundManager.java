@@ -50,15 +50,17 @@ public class SoundManager {
             clip.start();
             
             //debug thing, the original clip is 15mins long.
-            if (path.toLowerCase().contains("title")) {
-                clip.loop(Clip.LOOP_CONTINUOUSLY);
-            }
+            // if (path.toLowerCase().contains("title")) {
+            //     clip.loop(Clip.LOOP_CONTINUOUSLY);
+            // }
             return clip;
         } catch (Exception e) {
             System.err.println("AUDIO SYSTEM CRASH!");
             e.printStackTrace();
             return null;
         }
+
+        
     }
 
     public static void stopMusic() {
