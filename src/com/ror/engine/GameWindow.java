@@ -15,6 +15,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.Border;
 
@@ -34,6 +35,11 @@ public class GameWindow implements BattlePanel.BattleActionListener {
     private static final String SCREEN_INVENTORY = "inventory";
     private static final String SCREEN_PROFILE = "profile";
     private static final String SCREEN_BATTLE = "battle";
+    private static final String[] REGION_MAP_IMAGE_CANDIDATES = {
+            "/com/ror/models/assets/images/regionmap.png",
+            "src/com/ror/models/assets/images/regionmap.png",
+            "assets/images/regionmap.png"
+    };
 
     private final DecimalFormat statFormat = new DecimalFormat("#,##0");
     private final Random random = new Random();
@@ -500,12 +506,7 @@ public class GameWindow implements BattlePanel.BattleActionListener {
         JPanel mapCard = createCardPanel();
         mapCard.setLayout(new BorderLayout(10, 10));
         mapCard.add(createHeading("Region Map"), BorderLayout.NORTH);
-
-        JPanel mapPlaceholder = new JPanel();
-        mapPlaceholder.setBackground(new Color(22, 26, 24));
-        mapPlaceholder.setPreferredSize(new Dimension(760, 420));
-        mapPlaceholder.setBorder(BorderFactory.createLineBorder(COLOR_BORDER, 2));
-        mapCard.add(mapPlaceholder, BorderLayout.CENTER);
+        mapCard.add(createRegionMapLabel(), BorderLayout.CENTER);
 
         JPanel destinations = createCardPanel();
         destinations.setLayout(new BoxLayout(destinations, BoxLayout.Y_AXIS));
@@ -1184,6 +1185,59 @@ public class GameWindow implements BattlePanel.BattleActionListener {
 
     private JLabel createHeading(String text) {
         return graphics.createHeading(text, COLOR_TEXT_DARK);
+    }
+
+    private JLabel createRegionMapLabel() {
+        BufferedImage regionMap = loadFirstAvailableImage(REGION_MAP_IMAGE_CANDIDATES);
+        JLabel mapLabel = regionMap != null
+                ? new JLabel() {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        super.paintComponent(g);
+                        g.drawImage(regionMap, 0, 0, getWidth(), getHeight(), null);
+                    }
+                }
+                : new JLabel("Region map unavailable.", SwingConstants.CENTER);
+        mapLabel.setOpaque(true);
+        mapLabel.setBackground(new Color(22, 26, 24));
+        mapLabel.setForeground(COLOR_PANEL);
+        mapLabel.setPreferredSize(new Dimension(760, 420));
+        mapLabel.setBorder(BorderFactory.createLineBorder(COLOR_BORDER, 2));
+        mapLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        mapLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+        return mapLabel;
+    }
+
+    private BufferedImage loadFirstAvailableImage(String... candidates) {
+        for (String candidate : candidates) {
+            if (candidate == null || candidate.isEmpty()) {
+                continue;
+            }
+
+            if (candidate.startsWith("/")) {
+                try (InputStream stream = getClass().getResourceAsStream(candidate)) {
+                    if (stream != null) {
+                        BufferedImage image = ImageIO.read(stream);
+                        if (image != null) {
+                            return image;
+                        }
+                    }
+                } catch (IOException ignored) {
+                }
+                continue;
+            }
+
+            try {
+                BufferedImage image = ImageIO.read(new File(candidate));
+                if (image != null) {
+                    return image;
+                }
+            } catch (IOException ignored) {
+            }
+        }
+
+        return null;
     }
 
     private JLabel createBody(String text) {
